@@ -11,7 +11,7 @@ import time
 
 from django.test import LiveServerTestCase
 
-
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from datetime import datetime, timedelta
 
 # These will be required when WebDriverWait is used to wait for pages to load.
@@ -19,14 +19,14 @@ from datetime import datetime, timedelta
 #from selenium.webdriver.support import expected_conditions as EC
 #from selenium.webdriver.common.by import By
 
-class UserAuthAdminTestCase(LiveServerTestCase):
+class UserAuthAdminTestCase(StaticLiveServerTestCase):
     """
     This test has been created for the completion of task b
     """
     def setUp(self):
         create_users()
         self.browser = webdriver.Chrome()
-        self.browser.implicitly_wait(10) # Wait for up to 10 seconds for the page to load.
+        # self.browser.implicitly_wait(10) # Wait for up to 10 seconds for the page to load.
 
     def tearDown(self):
         #logout
@@ -71,7 +71,7 @@ class UserAuthAdminTestCase(LiveServerTestCase):
         self.browser.get('{}{}'.format(self.live_server_url, '/admin/logout/'))
 
 
-class normalUser(LiveServerTestCase):
+class normalUser(StaticLiveServerTestCase):
     def setUp(self):
         create_users()
         self.browser = webdriver.Chrome()
