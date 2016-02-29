@@ -26,8 +26,8 @@ urlpatterns = [
     url(r'^$', views.index, name= 'index'),
     url(r'^index/', views.index, name= 'index'),
     url(r'accounts/', include('accounts.urls', namespace='accounts')),
-    url(r'^login/$', accounts_views.login, name = 'accounts-login'),
-    url(r'^logout/$', accounts_views.logout, name = 'accounts-logout'),
-    # url('^', include('django.contrib.auth.urls')),
+    # url(r'^login/$', accounts_views.login, name = 'accounts-login'),
+    # url(r'^logout/$', accounts_views.logout, name = 'accounts-logout'),
+    url('^', include('django.contrib.auth.urls')),
     # url(r'^login/$', auth_views.login, name = 'login')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

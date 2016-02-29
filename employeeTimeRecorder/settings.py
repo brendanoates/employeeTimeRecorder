@@ -122,3 +122,6 @@ STATIC_URL = '/static/'
 
 LOGIN_URL = '/accounts/login/'
 LOGOUT_URL = '/accounts/logout/'
+
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = 'C:/Users/Brendan/PycharmProjects/employeeTimeRecorder/email-messages' # change this to a proper location

@@ -3,8 +3,7 @@
 <body>
     {% block content %}
         <h1>Logged Out</h1>
-        <p>Thank you for using the Employe Claim Application today.</p>
-        <p><a href={% url 'login' %}>admin</a></p>
+        <p>Thank you {{ username }} for using the Employee Claim Application today.</p>
     {% endblock %}
 </body>
 </html>

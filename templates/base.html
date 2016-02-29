@@ -18,12 +18,13 @@
             <ul>
                 {% if user.is_authenticated %}
                     <li>welcome {{ user.username }}</li>
-                    <li><a href='/accounts/logout/'>Logout</a></li>
+                    <li><a href="{% url 'accounts:accounts-logout' %}">Logout</a></li>
                     {% if user.is_staff %}
                         <li><a href='/admin/'>admin</a></li>
                     {% endif %}
                 {% else %}
-                    <li><a href='/accounts/login/'>Login/Register</a></li>
+                    <li><a href="{% url 'accounts:accounts-login' %}">Login</a></li>
+                    <li><a id='id_register' href="{% url 'accounts:accounts-register' %}">Reister</a></li>
                 {% endif %}
             </ul>
         </nav>

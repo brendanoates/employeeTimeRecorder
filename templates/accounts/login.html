@@ -2,20 +2,10 @@
 {% block title %}Login{% endblock %}
 <body>
     {% block content %}
-        {% if form.errors %}
-            <p>Your username and password didn't match. Please try again.</p>
+        {% if error %}
+            <p class="rederror">Your username and password didn't match. Please try again.</p>
         {% endif %}
-
-        {% if next %}
-            {% if user.is_authenticated %}
-                <p>Your account doesn't have access to this page. To proceed,
-                please login with an account that has access.</p>
-                {% else %}
-                <p>Please login to see this page.</p>
-            {% endif %}
-        {% endif %}
-
-        <form method="post" action="{% url 'accounts-login' %}">
+        <form method="post" action="{% url 'accounts:accounts-login' %}">
         {% csrf_token %}
         <table>
         <tr>
@@ -33,7 +23,7 @@
         </form>
 
 
-{#        <p><a href="{% url 'password_reset' %}">Lost password?</a></p>#}
+        <p><a href="{% url 'accounts:password-reset' %}">Lost password?</a></p>
 
     {% endblock %}
 </body>

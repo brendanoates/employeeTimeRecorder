@@ -81,11 +81,16 @@ class normalUser(StaticLiveServerTestCase):
         #logout
         self.browser.get('{}{}'.format(self.live_server_url, '/admin/logout/'))
         self.browser.quit()
-
+    #Task C story 1
+    #As a potential user I want to register on the site as a user with a unique user id and password.
+    def test_new_user_registration(self):
+        self.browser.get('{}{}'.format(self.live_server_url, ''))
+        self.browser.maximize_window()
+        register_btn = self.browser.find_element_by_id('id_register')
     def test_login(self):
         self.browser.get('{}{}'.format(self.live_server_url, ''))
         self.browser.maximize_window()
-        self.assertEquals(self.browser.title, 'login')
+        self.assertEquals(self.browser.title, 'Login')
         #Login of staff
         # user_id = self.browser.find_element_by_id('id_username')
         # user_password = self.browser.find_element_by_id('id_password')
@@ -100,10 +105,7 @@ class normalUser(StaticLiveServerTestCase):
 def create_users():
     testUsers = [('userNonStaff', False, False), ('userStaff', True, False,), ('userSuper', True, True)]
     for user in testUsers:
-        created_user, created = User.objects.get_or_create(username=user[0],
-                                                           password='pbkdf2_sha256$24000$msczUFpPDQ5d$LbfB4LWUPYBs1Z61'
-                                                                    'ATojQvEngkPqk9SafZSGL9qjZCA=',
-                                                           is_staff = user[1]
-                                                           )
+        created_user, created = User.objects.get_or_create(username=user[0], is_staff = user[1])
         created_user.is_superuser = user[2]
+        created_user.set_password('testpassword')
         created_user.save()

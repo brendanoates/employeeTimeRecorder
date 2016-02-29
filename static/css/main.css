@@ -42,3 +42,7 @@ padding: 20px;
     color: #ffd23c;
     background-color: #FFF;
 }
+
+.rederror {
+    color: red;
+}
