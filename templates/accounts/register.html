@@ -1,11 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Register{% endblock %}
+{% block title %}Registration{% endblock %}
 <body>
     {% block content %}
         {% if error %}
-            <p class="rederror">Your username and password didn't match. Please try again.</p>
+            <p class="rederror">{{ error }}</p>
         {% endif %}
-        <form method="post" action="{% url 'accounts:accounts-login' %}">
+        <p>Please enter a username and password to start the registration process</p>
+        <form method="post" action="{% url 'accounts:accounts-register' %}">
         {% csrf_token %}
         <table>
         <tr>
@@ -18,7 +19,7 @@
         </tr>
         </table>
 
-        <input type="submit" value="login" />
+        <input type="submit" value="Register" />
         <input type="hidden" name="next" value="{{ next }}" />
         </form>
 

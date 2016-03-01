@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'profiles'
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -125,3 +126,5 @@ LOGOUT_URL = '/accounts/logout/'
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = 'C:/Users/Brendan/PycharmProjects/employeeTimeRecorder/email-messages' # change this to a proper location
+
+AUTH_USER_MODEL = "profiles.EmployeeTimeRecorderUser"

@@ -86,7 +86,10 @@ class normalUser(StaticLiveServerTestCase):
     def test_new_user_registration(self):
         self.browser.get('{}{}'.format(self.live_server_url, ''))
         self.browser.maximize_window()
+        self.assertEquals(self.browser.title, 'Registration')
         register_btn = self.browser.find_element_by_id('id_register')
+
+
     def test_login(self):
         self.browser.get('{}{}'.format(self.live_server_url, ''))
         self.browser.maximize_window()

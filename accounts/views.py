@@ -4,13 +4,28 @@ from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm, AuthenticationForm
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.db import IntegrityError
 from django.shortcuts import render, redirect
 from django.contrib.auth import views as auth_views
 
+from profiles.models import EmployeeTimeRecorderUser
 
+
+@login_required
 def profile(request):
-    return render(request, 'accounts/profile.html')
+    context = {}
+    if request.method == 'POST':
+        user = request.user
+        staff_number = request.POST['staff_number']
+        manager_email = '{}@amadeus.com'.format(request.POST['manager_email'])
+        # try:
+        #     manager = User.objects.get(email=manager_email)
+        # except ObjectNotFound as e:
+        #
+        # manger
+    return render(request, 'accounts/profile.html', context)
 
 
 def login(request):
@@ -37,25 +52,23 @@ def login(request):
 
 
 def register(request):
-    # if user is authenticated route to normal index else route to login
+    error = ''
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
-        user = authenticate(username=username, password=password)
+        user = None
+        try:
+            EmployeeTimeRecorderUser.objects.create_user(username=username, password=password)
+            user = authenticate(username=username, password=password)
+        except IntegrityError as e:
+            error = "This username has already been taken"
         if user is not None:
-            if user.is_active:
-                login(request, user)
-                return render(request, reverse('index'))  # Redirect to index page.
-            else:
-                pass
-                # Return a 'disabled account' error message
-    else:
-        # Return an 'invalid login' error message.
-        pass
-
+            auth_login(request, user)
+            return redirect(reverse('accounts:profile'))  # Redirect to profile page.
     form = AuthenticationForm()
+    context = {'form': form, 'error' : error}
     auth_logout(request)
-    return render(request, 'accounts/register.html', {'form': form})
+    return render(request, 'accounts/register.html', context)
 
 
 def logout(request):
