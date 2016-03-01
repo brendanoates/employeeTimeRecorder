@@ -10,6 +10,7 @@ from django.db import IntegrityError
 from django.shortcuts import render, redirect
 from django.contrib.auth import views as auth_views
 
+from accounts.forms import RegistrationForm
 from profiles.models import EmployeeTimeRecorderUser
 
 
@@ -65,7 +66,7 @@ def register(request):
         if user is not None:
             auth_login(request, user)
             return redirect(reverse('accounts:profile'))  # Redirect to profile page.
-    form = AuthenticationForm()
+    form = RegistrationForm()
     context = {'form': form, 'error' : error}
     auth_logout(request)
     return render(request, 'accounts/register.html', context)
