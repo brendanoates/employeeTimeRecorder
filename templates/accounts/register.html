@@ -3,7 +3,9 @@
 <body>
     {% block content %}
         {% if error %}
-            <p class="rederror">{{ error }}</p>
+            <div id="error_msg">
+                <p class="rederror">{{ error }}</p>
+            </div>
         {% endif %}
         <p>Please complete the following fields to start the registration process</p>
         <form method="post" action="{% url 'accounts:accounts-register' %}">

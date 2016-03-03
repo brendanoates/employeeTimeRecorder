@@ -10,6 +10,7 @@ from django.db import IntegrityError
 from django.shortcuts import render, redirect
 from django.contrib.auth import views as auth_views
 
+from accounts import logger
 from accounts.forms import RegistrationForm
 from profiles.models import EmployeeTimeRecorderUser
 
@@ -61,11 +62,14 @@ def register(request):
         try:
             EmployeeTimeRecorderUser.objects.create_user(username=username, password=password)
             user = authenticate(username=username, password=password)
+            logger.info('new user: {} added, IP: to be defined'.format(username))
         except IntegrityError as e:
             error = "This username has already been taken"
+        except:
+            logger.exception('Exception:')
         if user is not None:
             auth_login(request, user)
-            return redirect(reverse('accounts:profile'))  # Redirect to profile page.
+            return redirect(reverse('index'))  # Redirect to profile page.
     form = RegistrationForm()
     context = {'form': form, 'error' : error}
     auth_logout(request)
