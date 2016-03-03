@@ -3,7 +3,7 @@
 <body>
     {% block content %}
         {% if error %}
-            <p class="rederror">Your username and password didn't match. Please try again.</p>
+            <p class="rederror">{{ error|safe }}</p>
         {% endif %}
         <form method="post" action="{% url 'accounts:accounts-login' %}">
         {% csrf_token %}

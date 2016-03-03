@@ -42,10 +42,10 @@ def login(request):
                 return redirect(reverse('index'))
             else:
                 form = AuthenticationForm()
-                context = {'error': "This account has been deactivated", 'form': form}
+                context = {'error': u"This account has been deactivated", 'form': form}
         else:
             form = AuthenticationForm()
-            context = {'error': "Your username and password didn't match. Please try again.", 'form': form}
+            context = {'error': u"Your username and password didn't match. Please try again.", 'form': form}
     else:
         form = AuthenticationForm()
         context = {'form': form}
@@ -62,6 +62,11 @@ def register(request):
         try:
             EmployeeTimeRecorderUser.objects.create_user(username=username, password=password)
             user = authenticate(username=username, password=password)
+            if request.POST['staff_number']:
+                user.staff_number = request.POST['staff_number']
+            if request.POST['manager_email']:
+                user.manager_email = request.POST['manager_email']
+            user.save()
             logger.info('new user: {} added, IP: to be defined'.format(username))
         except IntegrityError as e:
             error = "This username has already been taken"
