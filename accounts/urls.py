@@ -21,7 +21,6 @@ from accounts import views
 appname = 'accounts'
 urlpatterns = [
     url(r'^register/', views.register, name= 'accounts-register'),
-    url(r'^profile/', views.profile, name= 'profile'),
     url(r'^login/', views.login, name= 'accounts-login'),
     url(r'^logout/', views.logout, name= 'accounts-logout'),
     url(r'^password_change/$', views.password_change, name='password-change'),

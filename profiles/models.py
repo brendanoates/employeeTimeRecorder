@@ -3,8 +3,8 @@ from django.db import models
 
 
 class EmployeeTimeRecorderUser(AbstractUser):
-    staff_number = models.CharField(max_length=10, null=True)
-    manager_email = models.CharField(max_length=30, null=True)
+    staff_number = models.CharField(max_length=10, null=True, blank=True, default='')
+    manager_email = models.CharField(max_length=30, null=True, blank=True, default='')
 
     def get_managers_email(self):
         ret_val = None

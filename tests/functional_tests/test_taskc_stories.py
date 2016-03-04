@@ -1,20 +1,13 @@
+from datetime import datetime
+
 from django.conf import settings
-from django.test import Client
-from django.test import TestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.core.urlresolvers import reverse
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import Select
-import time
+
 from profiles.models import EmployeeTimeRecorderUser as User
-from django.test import LiveServerTestCase
 
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from datetime import datetime, timedelta
-
-# These will be required when WebDriverWait is used to wait for pages to load.
-#from selenium.webdriver.support.ui import WebDriverWait
-#from selenium.webdriver.support import expected_conditions as EC
-#from selenium.webdriver.common.by import By
 
 class UserAuthAdminTestCase(StaticLiveServerTestCase):
     """
@@ -32,7 +25,7 @@ class UserAuthAdminTestCase(StaticLiveServerTestCase):
 
     def test_login(self):
         self.browser.get('{}{}'.format(self.live_server_url, '/admin/login/'))
-        self.browser.maximize_window()
+        # self.browser.maximize_window()
 
         #Task b Story 1
         # As a staff user I want log into the system and access the admin section of the project
@@ -41,7 +34,7 @@ class UserAuthAdminTestCase(StaticLiveServerTestCase):
         user_id.send_keys('userStaff')
         user_password.send_keys('testpassword')
         user_password.send_keys(Keys.ENTER)
-        time.sleep(3)
+        # time.sleep(3)
         self.assertEquals(self.browser.title, 'Site administration | Django site admin')
         self.browser.get('{}{}'.format(self.live_server_url, '/admin/logout/'))
         #Task b Story 2
@@ -52,7 +45,7 @@ class UserAuthAdminTestCase(StaticLiveServerTestCase):
         user_id.send_keys('userSuper')
         user_password.send_keys('testpassword')
         user_password.send_keys(Keys.ENTER)
-        time.sleep(3)
+        # time.sleep(3)
         self.assertEquals(self.browser.title, 'Site administration | Django site admin')
         self.browser.get('{}{}'.format(self.live_server_url, '/admin/logout/'))
         #Task b Story 3
@@ -63,7 +56,7 @@ class UserAuthAdminTestCase(StaticLiveServerTestCase):
         user_id.send_keys('userNonStaff')
         user_password.send_keys('testpassword')
         user_password.send_keys(Keys.ENTER)
-        time.sleep(3)
+        # time.sleep(3)
         self.assertEquals(self.browser.title, 'Log in | Django site admin')
         self.browser.get('{}{}'.format(self.live_server_url, '/admin/logout/'))
 
@@ -72,7 +65,6 @@ class normalUser(StaticLiveServerTestCase):
     def setUp(self):
         create_users()
         self.browser = webdriver.Chrome()
-        self.browser.implicitly_wait(10) # Wait for up to 10 seconds for the page to load.
         self.USER1 = 'new.user'
         self.PASSWORD = 'testpassword'
 
@@ -83,7 +75,7 @@ class normalUser(StaticLiveServerTestCase):
 
     def test_new_user_registration(self):
         self.browser.get('{}{}'.format(self.live_server_url, ''))
-        self.browser.maximize_window()
+        # self.browser.maximize_window()
         #Task C story 1 and 4
         #As a potential user I want to register on the site as a user with a unique user id and password.
         #As a user I want users to have the ability to include my staff number and managers email when registering.
@@ -98,9 +90,9 @@ class normalUser(StaticLiveServerTestCase):
         user_password.send_keys(self.PASSWORD)
         user_staff_number.send_keys('12345')
         user_manager_email.send_keys('manager.name')
-        response = user_password.send_keys(Keys.ENTER)
+        user_password.send_keys(Keys.ENTER)
         self.assertEquals(self.browser.title, 'Home')
-        self.assertIn('welcome {}'.format(self.USER1), self.browser.find_element_by_id('menu').text)
+        self.assertIn('welcome {}'.format(self.USER1), self.browser.find_element_by_id('bs-navbar-collapse-1').text)
         #Task C story 3
         #As the maintainer of the site I want a log any time a new users registers containing their IP address to help me
         #identify inappropriate usage of registration.
@@ -114,7 +106,7 @@ class normalUser(StaticLiveServerTestCase):
         logout_link = self.browser.find_element_by_id('id_logout')
         logout_link.click()
         self.browser.get('{}{}'.format(self.live_server_url, ''))
-        self.browser.maximize_window()
+        # self.browser.maximize_window()
         register_link = self.browser.find_element_by_id('id_register')
         register_link.click()
         self.assertEquals(self.browser.title, 'Registration')
@@ -127,14 +119,14 @@ class normalUser(StaticLiveServerTestCase):
 
     def test_login(self):
         self.browser.get('{}{}'.format(self.live_server_url, ''))
-        self.browser.maximize_window()
+        # self.browser.maximize_window()
         self.assertEquals(self.browser.title, 'Login')
         #Task C story 5
         #As a registered user I want to be able to log in
         user_id = self.browser.find_element_by_id('id_username')
         user_password = self.browser.find_element_by_id('id_password')
         user_id.send_keys('userNonStaff')
-        user_password.send_keys('testpassword')
+        user_password.send_keys(self.PASSWORD)
         user_password.send_keys(Keys.ENTER)
         self.assertEquals(self.browser.title, 'Home')
         logout_link = self.browser.find_element_by_id('id_logout')
@@ -142,21 +134,37 @@ class normalUser(StaticLiveServerTestCase):
         #Task C story 6
         #As a registered staff user I want to be able to log in and access the admin backend
         self.browser.get('{}{}'.format(self.live_server_url, ''))
-        self.browser.maximize_window()
+        # self.browser.maximize_window()
         self.assertEquals(self.browser.title, 'Login')
         user_id = self.browser.find_element_by_id('id_username')
         user_password = self.browser.find_element_by_id('id_password')
         user_id.send_keys('userStaff')
-        user_password.send_keys('testpassword')
+        user_password.send_keys(self.PASSWORD)
         user_password.send_keys(Keys.ENTER)
         self.assertEquals(self.browser.title, 'Home')
         self.browser.find_element_by_id('id_admin').click()
         self.assertEquals(self.browser.title, 'Site administration | Django site admin')
         #Task C7.	As a logged in user I want to be able to change my staff number and managers email
-
-        self.browser.get('{}{}'.format(self.live_server_url, '/admin/logout/'))
-
-
+        self.browser.get('{}{}'.format(self.live_server_url, reverse('accounts:accounts-logout')))
+        self.browser.get('{}{}'.format(self.live_server_url, reverse('accounts:accounts-login')))
+        user_id = self.browser.find_element_by_id('id_username')
+        user_password = self.browser.find_element_by_id('id_password')
+        user_id.send_keys('userNonStaff')
+        user_password.send_keys(self.PASSWORD)
+        user_password.send_keys(Keys.ENTER)
+        self.browser.find_element_by_id('id_account').click()
+        self.browser.find_element_by_id('id_staff_number').send_keys('54321')
+        self.browser.find_element_by_id('id_manager_email').send_keys('new.manager')
+        self.browser.find_element_by_xpath('//input[@value="Update"]').click()
+        #Task C story 8
+        # As a logged in user I want to be able to change my password
+        self.browser.find_element_by_id('id_account').click()
+        self.browser.find_element_by_id('id_change_password').click()
+        self.browser.find_element_by_id('id_old_password').send_keys(self.PASSWORD)
+        self.browser.find_element_by_id('id_new_password1').send_keys(self.PASSWORD)
+        self.browser.find_element_by_id('id_new_password2').send_keys(self.PASSWORD)
+        self.browser.find_element_by_xpath('//input[@value="Change my password"]').click()
+        self.assertEquals(self.browser.title, 'Password changed')
 def create_users():
     testUsers = [('userNonStaff', False, False), ('userStaff', True, False,), ('userSuper', True, True)]
     for user in testUsers:

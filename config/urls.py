@@ -20,14 +20,12 @@ from accounts import views as accounts_views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls import include, url
-# from django.contrib.auth import views as auth_views
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls, name='admin'),
     url(r'^$', views.index, name= 'index'),
     url(r'^index/', views.index, name= 'index'),
     url(r'accounts/', include('accounts.urls', namespace='accounts')),
-    # url(r'^login/$', accounts_views.login, name = 'accounts-login'),
-    # url(r'^logout/$', accounts_views.logout, name = 'accounts-logout'),
+    url(r'profiles/', include('profiles.urls', namespace='profiles')),
     url('^', include('django.contrib.auth.urls')),
-    # url(r'^login/$', auth_views.login, name = 'login')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

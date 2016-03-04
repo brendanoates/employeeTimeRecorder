@@ -2,25 +2,21 @@
 {% block title %}Registration{% endblock %}
 <body>
     {% block content %}
-        {% if error %}
-            <div id="error_msg">
-                <p class="rederror">{{ error }}</p>
-            </div>
-        {% endif %}
+        {% include "error.html" %}
         <p>Please complete the following fields to start the registration process</p>
         <form method="post" action="{% url 'accounts:accounts-register' %}">
         {% csrf_token %}
         <p>Please use the first part of your email address as your username e.g. if your email <br/>address is
             my.name@amadeus use my.name as your username<br/></p>
-        <table>
+        <p><table>
             <tr>
                 <td>{{ form.username.label_tag }}</td><td>{{ form.username }}@amadeus.com<br/></td>
             </tr>
             <tr>
                 <td>{{ form.password.label_tag }}</td><td>{{ form.password }}</td>
             </tr>
-        </table>
-        <p>Please provide your staff number as it appears on your pay advice slip</p>
+        </table></p><br>
+        <p>Please provide your staff number as it appears on your pay advice slip if you<br>intend to submit claims</p>
         <p>    {{ form.staff_number.label_tag }}
             {{ form.staff_number }}</p>
         <p>Please provide your authorising managers email address</p>

@@ -1,33 +1,14 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
-from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import PasswordChangeForm, AuthenticationForm
-from django.contrib.auth.models import User
+from django.contrib.auth import views as auth_views
+from django.contrib.auth.forms import AuthenticationForm
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.shortcuts import render, redirect
-from django.contrib.auth import views as auth_views
-
 from accounts import logger
 from accounts.forms import RegistrationForm
 from profiles.models import EmployeeTimeRecorderUser
-
-
-@login_required
-def profile(request):
-    context = {}
-    if request.method == 'POST':
-        user = request.user
-        staff_number = request.POST['staff_number']
-        manager_email = '{}@amadeus.com'.format(request.POST['manager_email'])
-        # try:
-        #     manager = User.objects.get(email=manager_email)
-        # except ObjectNotFound as e:
-        #
-        # manger
-    return render(request, 'accounts/profile.html', context)
 
 
 def login(request):
@@ -62,12 +43,13 @@ def register(request):
         try:
             EmployeeTimeRecorderUser.objects.create_user(username=username, password=password)
             user = authenticate(username=username, password=password)
-            if request.POST['staff_number']:
-                user.staff_number = request.POST['staff_number']
-            if request.POST['manager_email']:
-                user.manager_email = request.POST['manager_email']
-            user.save()
-            logger.info('new user: {} added, IP: to be defined'.format(username))
+            if user:
+                if request.POST.get('staff_number'):
+                    user.staff_number = request.POST['staff_number']
+                if request.POST.get('manager_email'):
+                    user.manager_email = request.POST['manager_email']
+                user.save()
+                logger.info('new user: {} added, IP: {}'.format(username, request.environ.get('REMOTE_ADDR')))
         except IntegrityError as e:
             error = "This username has already been taken"
         except:
@@ -93,10 +75,11 @@ def password_reset(request):
                                      post_reset_redirect = reverse('accounts:password-reset-complete'))
 
 def password_change(request):
-    return auth_views.password_change(request, template_name='accounts/password_reset_form.html')
+    return auth_views.password_change(request, template_name='accounts/password_change_form.html',
+                                      post_change_redirect= reverse('accounts:password-change-done'))
 
 def password_change_done(request):
-    return auth_views.password_change_done(request, template_name='accounts/password_reset_form.html')
+    return auth_views.password_change_done(request, template_name='accounts/password_change_done.html')
 
 def password_reset_done(request):
     return render(request, 'accounts/password_reset_done.html', {})

@@ -1,10 +1,4 @@
-from importlib import import_module
-
-from django.conf import settings
-from django.core.urlresolvers import reverse, resolve
-from django.http import HttpRequest
 from django.test import Client, TestCase
-from accounts.views import register as registration_page
 from profiles.models import EmployeeTimeRecorderUser as User
 
 '''
