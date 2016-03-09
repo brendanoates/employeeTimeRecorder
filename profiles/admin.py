@@ -9,4 +9,5 @@ from profiles.models import EmployeeTimeRecorderUser
 class EmployeeTimeRecorderUserAdmin(admin.ModelAdmin):
     filter_horizontal = ('groups', 'user_permissions')
 
+
 admin.site.register(EmployeeTimeRecorderUser, EmployeeTimeRecorderUserAdmin)

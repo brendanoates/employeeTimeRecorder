@@ -50,7 +50,8 @@
                     <li><a id='id_logout' href="{% url 'accounts:accounts-logout' %}" title="Click to log out">Logout
                     </a></li>
                     {% if user.is_staff %}
-                        <li><a id='id_admin' href='/admin/' title="Click to go to the admin section">admin</a></li>
+                        <li><!--suppress HtmlUnknownTarget -->
+                            <a id='id_admin' href='/admin/' title="Click to go to the admin section">admin</a></li>
                     {% endif %}
                 {% else %}
                     <li><a href="{% url 'accounts:accounts-login' %}" title="Click to login">Login</a></li>

@@ -9,12 +9,11 @@ https://docs.djangoproject.com/en/1.9/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
-from _datetime import datetime
 import os
+from _datetime import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
@@ -74,7 +73,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'employeeTimeRecorder.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
@@ -84,7 +82,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
@@ -104,7 +101,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
@@ -118,9 +114,9 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
+# noinspection PyUnresolvedReferences
 STATICFILES_DIRS = (BASE_DIR + '/static/',)
 STATIC_URL = '/static/'
 
@@ -128,7 +124,7 @@ LOGIN_URL = '/accounts/login/'
 LOGOUT_URL = '/accounts/logout/'
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = 'C:/Users/Brendan/PycharmProjects/employeeTimeRecorder/email-messages' # change this to a proper location
+EMAIL_FILE_PATH = 'C:/Users/Brendan/PycharmProjects/employeeTimeRecorder/email-messages'
 
 AUTH_USER_MODEL = "profiles.EmployeeTimeRecorderUser"
 
@@ -138,7 +134,8 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '%(levelname)s %(asctime)s %(name)s %(module)s %(lineno)d pid:%(process)d thread:%(thread)d %(message)s'
+            'format': '%(levelname)s %(asctime)s %(name)s %(module)s %(lineno)d pid:%(process)d thread:%(thread)d '
+                      '%(message)s'
         },
         'simple': {
             'format': '%(levelname)s %(message)s'

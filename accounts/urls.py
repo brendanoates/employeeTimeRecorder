@@ -14,27 +14,20 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url
-from django.conf.urls import include, url
-from accounts import views
 
+from accounts import views
 
 appname = 'accounts'
 urlpatterns = [
-    url(r'^register/', views.register, name= 'accounts-register'),
-    url(r'^login/', views.login, name= 'accounts-login'),
-    url(r'^logout/', views.logout, name= 'accounts-logout'),
+    url(r'^register/', views.register, name='accounts-register'),
+    url(r'^login/', views.login, name='accounts-login'),
+    url(r'^logout/', views.logout, name='accounts-logout'),
     url(r'^password_change/$', views.password_change, name='password-change'),
     url(r'^password_change/done/$', views.password_change_done, name='password-change-done'),
-    url(r'^password_reset/$', views.password_reset, name= 'password-reset'),
+    url(r'^password_reset/$', views.password_reset, name='password-reset'),
     url(r'^password_reset/done/$', views.password_reset_done, name='password-reset-done'),
-    url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', views.password_reset_confirm),
+    url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+        views.password_reset_confirm),
     url(r'^reset/done/$', views.password_reset_complete, name='password-reset-complete')
-
-
-
-
-
-
-
 
 ]

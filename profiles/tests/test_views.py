@@ -1,16 +1,19 @@
 from django.core.urlresolvers import reverse
 from django.test import Client, TestCase
+
 from profiles.models import EmployeeTimeRecorderUser as User
 
 '''
  Unit test the registration view, must be able to register with a unique user id or receive an error response if id
  is not unique
 '''
-class ProfileViewTest(TestCase):
 
-    '''
+
+class ProfileViewTest(TestCase):
+    """
     # create a user to test the profile view
-    # '''
+    """
+
     def setUp(self):
         self.USERNAME = 'testuser'
         self.PASSWORD = 'testPassword'
@@ -18,7 +21,7 @@ class ProfileViewTest(TestCase):
         self.MANAGER_EMAIL = 'manager.name'
         client = Client()
         client.post(reverse('accounts:accounts-register'),
-                               {'username': self.USERNAME, 'password': self.PASSWORD})
+                    {'username': self.USERNAME, 'password': self.PASSWORD})
         client.get(reverse('accounts:accounts-logout'))
 
     def __login(self):
@@ -39,13 +42,12 @@ class ProfileViewTest(TestCase):
         client = self.__login()
         user = User.objects.get(username=self.USERNAME)
         self.assertNotEqual(user.staff_number, self.STAFFNUMBER)
-        self.assertNotEqual(user.manager_email,self.MANAGER_EMAIL)
+        self.assertNotEqual(user.manager_email, self.MANAGER_EMAIL)
         response = client.post(reverse('profiles:profiles'),
                                {'staff_number': self.STAFFNUMBER, 'manager_email': self.MANAGER_EMAIL})
         self.assertContains(response, '', status_code=302)
-        self.assertEqual(response.url, reverse('index')) #should redirect to index
+        self.assertEqual(response.url, reverse('index'))  # should redirect to index
         client.get(reverse('accounts:accounts-logout'))
         user = User.objects.get(username=self.USERNAME)
         self.assertEqual(user.staff_number, self.STAFFNUMBER)
-        self.assertEqual(user.manager_email,self.MANAGER_EMAIL)
-
+        self.assertEqual(user.manager_email, self.MANAGER_EMAIL)

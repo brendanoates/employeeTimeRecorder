@@ -8,8 +8,8 @@ from profiles import logger
 @login_required
 def profile(request):
     context = {}
-    error = ''
     if request.method == 'POST':
+        # noinspection PyBroadException
         try:
             user = request.user
             if request.POST['staff_number']:
@@ -18,8 +18,8 @@ def profile(request):
                 user.manager_email = request.POST['manager_email']
             user.save()
             return redirect(reverse('index'))
-        except:
+        except Exception:
             logger.exception('Exception')
             error = 'An Exception has occurred please report this if you continue to experience this issue'
-            context['error':error]
+            context['error'] = error
     return render(request, 'profiles/profile.html', context)

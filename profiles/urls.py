@@ -19,14 +19,6 @@ from profiles import views
 
 appname = 'profiles'
 urlpatterns = [
-    url(r'^profile/', views.profile, name= 'profiles'),
-
-
-
-
-
-
-
-
+    url(r'^profile/', views.profile, name='profiles'),
 
 ]
