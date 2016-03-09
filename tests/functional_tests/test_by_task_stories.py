@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.conf import settings
+from django.contrib.auth.models import Group, Permission
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core.urlresolvers import reverse
 from selenium import webdriver
@@ -196,3 +197,49 @@ class TaskCTestCases(StaticLiveServerTestCase):
         self.browser.find_element_by_id('id_new_password2').send_keys(self.PASSWORD)
         self.browser.find_element_by_xpath('//input[@value="Change my password"]').click()
         self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Password changed')))
+
+
+class TaskDTestCases(StaticLiveServerTestCase):
+    """
+    This class holds the tests which haves been created for the completion of task D
+    """
+
+    def setUp(self):
+        create_users()
+        created_group, created = Group.objects.get_or_create(name="Human Resources")
+        permission_object = Permission.objects.get(codename='change_claimtype')
+        created_group.permissions.add(permission_object)
+        created_group.save()
+        staff_user = User.objects.get(username='userStaff')
+        staff_user.groups.add(created_group)
+        staff_user.save()
+        self.browser = webdriver.Chrome()
+
+    def tearDown(self):
+        # logout
+        self.browser.get('{}{}'.format(self.live_server_url, '/admin/logout/'))
+        self.browser.quit()
+
+    def test_new_user_registration(self):
+        self.browser.get('{}{}'.format(self.live_server_url, ''))
+        # Task D story 1
+        # As a HR member I want to be able to add new claim types via admin
+        self.browser.get('{}{}'.format(self.live_server_url, ''))
+        WebDriverWait(self.browser, 10).until(ec.title_is('Login'))
+        self.browser.find_element_by_id('id_username').send_keys('userStaff')
+        self.browser.find_element_by_id('id_password').send_keys('testpassword')
+        self.browser.find_element_by_id('id_password').send_keys(Keys.ENTER)
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_admin')))
+        self.browser.find_element_by_id('id_admin').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Site administration | Django site admin'))
+        self.assertIn(('Claim types'), self.browser.find_element_by_class_name('model-claimtype').text)
+        # Task D story 2
+        # As a logged in employee I want to be able to add a new claim
+        self.browser.get('{}{}'.format(self.live_server_url, '/admin/logout/'))
+        WebDriverWait(self.browser, 10).until(ec.title_is('Logged out | Django site admin'))
+        self.browser.get('{}{}'.format(self.live_server_url, ''))
+        WebDriverWait(self.browser, 10).until(ec.title_is('Login'))
+        self.browser.find_element_by_id('id_username').send_keys('userNonStaff')
+        self.browser.find_element_by_id('id_password').send_keys('testpassword')
+        self.browser.find_element_by_id('id_password').send_keys(Keys.ENTER)
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_new_claim_link')))

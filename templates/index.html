@@ -2,6 +2,10 @@
 {% block title %}Home{% endblock %}
 <body>
     {% block content %}
-        <h1>Index</h1>
+        <h1>Home</h1>
+        {% if user.is_authenticated %}
+            <!--suppress HtmlUnknownTarget -->
+            <a id="id_new_claim_link" href="/claims/new_claim/">create a new claim</a>
+        {% endif %}
     {% endblock %}
 </body>
