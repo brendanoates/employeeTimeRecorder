@@ -58,7 +58,7 @@ def register(request):
             logger.exception('Exception:')
         if user is not None:
             auth_login(request, user)
-            return redirect(reverse('index'))  # Redirect to profile page.
+            return redirect(reverse('index'))
     form = RegistrationForm()
     context = {'form': form, 'error': error}
     auth_logout(request)

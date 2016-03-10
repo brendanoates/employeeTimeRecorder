@@ -7,7 +7,9 @@
     {% endif %}
     <form method="post" action="{% url 'claims:new_claim' %}">
         {% csrf_token %}
-        {{ form.as_table }}
+        {{ form.as_p }}
+        <input type="submit" value="Save Claim">
     </form>
+
 {% endblock %}
 </body>
