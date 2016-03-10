@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from bootstrap3_datetime.widgets import DateTimePicker
 from django import forms
 from django.forms import ModelForm
@@ -9,20 +11,27 @@ class ClaimForm(ModelForm):
     type = forms.ModelChoiceField(queryset=ClaimType.objects.all().order_by('name'), label='Type of claim',
                                   help_text='Please select the claim type that you want to create', required=True)
     value = forms.FloatField(label='Value', help_text='Please enter the value of the claim ', required=True)
-    date = forms.DateField(required=True, widget=DateTimePicker(options={"format": "YYYY-MM-DD"}))
+    date = forms.DateField(required=False, input_formats=('%d %B %Y',), help_text="Please enter the date the claim "
+                                                                                  "applies to",
+                           widget=DateTimePicker(options={"format": "DD MMMM YYYY", "size": 12} ))
 
     def clean(self):
         cleaned_data = super(ClaimForm, self).clean()
         type = cleaned_data.get('type')
         value = cleaned_data.get('value')
-        date = cleaned_data.get('date')
-        if type.count and not value.is_integer():
+        date = self.data.get('date')
+        if type and type.count and not value.is_integer():
             raise forms.ValidationError('You have not entered a valid count value')
-        if type.maximum_value < value:
+        if type and value and type.maximum_value < value:
             raise forms.ValidationError('The value you are trying to claim exceeds the maximum allowed for the claim '
                                         'type')
-        if not type.allow_multiple and Claim.objects.filter(date=date, type=type):
-            raise forms.ValidationError('You have alreeady made a claim for of this type on this date')
+        try:
+            date_object = datetime.strptime(date, '%d %B %Y')
+            self.date = date_object
+        except:
+            raise forms.ValidationError('The date is not valid')
+        if type and not type.allow_multiple and Claim.objects.filter(date=date_object, type=type):
+            raise forms.ValidationError('You have already made a claim for of this type on this date')
     class Meta:
         model = Claim
         exclude = ['owner', 'processed']

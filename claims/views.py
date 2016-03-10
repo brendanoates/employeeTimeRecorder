@@ -11,6 +11,7 @@ def new_claim(request):
     if request.method == 'POST':
         form = ClaimForm(request.POST)
         if form.is_valid():
+            #we need to save the valid claim
             return redirect(reverse('index'))
         pass
     else:
