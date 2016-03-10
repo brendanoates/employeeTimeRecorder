@@ -59,4 +59,6 @@ docs/_build/
 # PyBuilder
 target/
 
+# Pycharm settings
+.idea/
 # Created by .ignore support plugin (hsz.mobi)
