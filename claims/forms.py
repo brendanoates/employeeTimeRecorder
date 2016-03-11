@@ -2,12 +2,22 @@ from datetime import datetime
 
 from bootstrap3_datetime.widgets import DateTimePicker
 from django import forms
+from django.core.exceptions import ObjectDoesNotExist
 from django.forms import ModelForm
 
 from claims.models import Claim, ClaimType
+from profiles.models import EmployeeTimeRecorderUser
 
 
 class ClaimForm(ModelForm):
+    authorising_manager = forms.ModelChoiceField(queryset=EmployeeTimeRecorderUser.objects.
+                                                 filter(groups__permissions__name="Can authorise claim").
+                                                 order_by('username'),
+
+                                                 label='Authorising Manager',
+                                                 help_text='Please select the manager to authorise your claim',
+                                                 required=True)
+
     type = forms.ModelChoiceField(queryset=ClaimType.objects.all().order_by('name'), label='Type of claim',
                                   help_text='Please select the claim type that you want to create', required=True)
     value = forms.FloatField(label='Value', help_text='Please enter the value of the claim ', required=True)
@@ -34,7 +44,7 @@ class ClaimForm(ModelForm):
             raise forms.ValidationError('You have already made a claim for of this type on this date')
     class Meta:
         model = Claim
-        exclude = ['owner', 'processed']
+        exclude = ['owner', 'processed', 'senior_manager']
 
 
         # owner = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='related owner', related_name='claim_owner')
