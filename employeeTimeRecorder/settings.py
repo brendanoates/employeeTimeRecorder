@@ -35,11 +35,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # third party apps
     'bootstrap3_datetime',
+    'crispy_forms',
+    # my apps
     'accounts',
-    'profiles',
     'claims',
-    'core'
+    'core',
+    'profiles',
+
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -189,3 +193,5 @@ LOGGING = {
         }
     }
 }
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'

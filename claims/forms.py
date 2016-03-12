@@ -44,7 +44,7 @@ class ClaimForm(ModelForm):
             raise forms.ValidationError('You have already made a claim for of this type on this date')
     class Meta:
         model = Claim
-        exclude = ['owner', 'processed', 'senior_manager']
+        exclude = ['owner', 'processed', 'senior_manager', 'authorised', 'senior_authorised']
 
 
         # owner = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='related owner', related_name='claim_owner')

@@ -46,8 +46,9 @@ class Claim(TimeStampedModel):
     type = models.ForeignKey(ClaimType, verbose_name='related type')
     date = models.DateTimeField()
     value = models.FloatField()
-
-    processed = models.BooleanField(db_index=True)
+    authorised = models.BooleanField(db_index=True, default=False)
+    senior_authorised = models.BooleanField(db_index=True, default=False)
+    processed = models.BooleanField(db_index=True, default=False)
 
     def __str__(self):
         return ', '.join([self.owner.get_username(), str(self.date), str(self.type), ('value: ' + str(self.value))])

@@ -2,10 +2,9 @@
 {% block title %}Home{% endblock %}
 <body>
     {% block content %}
-        <h1>Home</h1>
         {% if user.is_authenticated %}
             <!--suppress HtmlUnknownTarget -->
-            <a id="id_new_claim_link" href="/claims/new_claim/">create a new claim</a>
+            <a id= "new_claim_button" class="btn btn-primary" href="/claims/new_claim/" role="button">create a new claim</a>
         {% endif %}
     {% endblock %}
 </body>

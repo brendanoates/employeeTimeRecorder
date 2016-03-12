@@ -2,3 +2,4 @@ Django==1.9.2
 requests==2.9.1
 selenium==2.52.0
 django-bootstrap3-datetimepicker==2.3
+django-crispy-forms==1.6.0

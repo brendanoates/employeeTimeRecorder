@@ -19,7 +19,7 @@ class RegisterViewTest(TestCase):
         response = client.get(reverse('accounts:accounts-register'))
         self.assertTrue(response.content.startswith(b'<!doctype html>'))
         self.assertIn(b'<title>Registration</title>', response.content)
-        self.assertIn(b'<label for="id_username">Username:</label>', response.content)
+        self.assertIn(b'''<input class="textinput textInput form-control" id="id_username"''', response.content)
         self.assertTrue(response.content.endswith(b'</html>'))
 
     def test_registartion_allows_registration(self):
@@ -64,7 +64,7 @@ class LoginViewTest(TestCase):
         response = client.get(reverse('accounts:accounts-login'))
         self.assertTrue(response.content.startswith(b'<!doctype html>'))
         self.assertIn(b'<title>Login</title>', response.content)
-        self.assertIn(b'<label for="id_username">Username:</label>', response.content)
+        self.assertIn(b'''<input class="textinput textInput form-control" id="id_username"''', response.content)
         self.assertTrue(response.content.endswith(b'</html>'))
 
     def test_login_allows_login(self):

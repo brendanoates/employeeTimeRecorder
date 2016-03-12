@@ -11,7 +11,6 @@ from accounts import logger
 from accounts.forms import RegistrationForm
 from profiles.models import EmployeeTimeRecorderUser
 
-
 def login(request):
     # if user is authenticated route to normal index else route to login
     if request.method == 'POST':
@@ -37,7 +36,10 @@ def login(request):
 
 def register(request):
     error = ''
+    context = {}
     if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        # if form.is_valid():
         username = request.POST['username']
         password = request.POST['password']
         user = None
@@ -59,8 +61,10 @@ def register(request):
         if user is not None:
             auth_login(request, user)
             return redirect(reverse('index'))
-    form = RegistrationForm()
-    context = {'form': form, 'error': error}
+    else:
+            form = RegistrationForm()
+    context['error'] = error
+    context["form"] = form
     auth_logout(request)
     return render(request, 'accounts/register.html', context)
 

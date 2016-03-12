@@ -1,13 +1,18 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 {% block title %}Profile{% endblock %}
 <body>
     {% block content %}
-       <form method="post" action="{% url 'profiles:profiles' %}">
-        {% csrf_token %}
-        <h4> Update User Profile</h4>
-        {% include "error.html" %}
-        <p>please use this form if you wish to update any of your account details</p>
-        <p>Please provide your staff number as it appears on your pay advice slip if you<br>intend to submit claims</p>
+    <div class="row">
+    <div class="col-md-2 col-centered"></div>
+        <div class="col-md-6 col-centered">
+            {% if error %}
+                <p class="rederror">{{ error|safe }}</p>
+            {% endif %}
+
+            <form method="post" action="{% url 'profiles:profiles' %}">
+                {% csrf_token %}
+        <p>Please provide your staff number as it appears on your pay advice slip if you intend to submit claims</p>
         <p><label for="id_staff_number">Staff Number:</label><input id="id_staff_number" name="staff_number"
                                                                      value="{{ user.staff_number }}" type="text" />
         </p>
@@ -15,11 +20,37 @@
         <p><label for="id_manager_email">Managers email:</label><input id="id_manager_email" name="manager_email"
                                                                        value="{{ user.manager_email }}" type="text"
             />@amadeus.com</p>
-        <input type="submit" value="Update" />
-        <input type="hidden" name="next" value="{{ next }}" />
-        </form>
-        <br>
-        <p><a id="id_change_password" href="{% url 'accounts:password-change' %}">Change password</a></p>
-
+                <input id="update_profile_button" class="btn, btn-primary" type="submit" value="Update Profile"><br/><br/>
+                <p><a id="id_change_password" href="{% url 'accounts:password-change' %}">Change password</a></p>
+            </form>
+        </div>
+    </div>
     {% endblock %}
 </body>
+
+
+{#{% extends "base.html" %}#}
+{#{% block title %}Profile{% endblock %}#}
+{#<body>#}
+{#    {% block content %}#}
+{#       <form method="post" action="{% url 'profiles:profiles' %}">#}
+{#        {% csrf_token %}#}
+{#        <h4> Update User Profile</h4>#}
+{#        {% include "error.html" %}#}
+{#        <p>please use this form if you wish to update any of your account details</p>#}
+{#        <p>Please provide your staff number as it appears on your pay advice slip if you<br>intend to submit claims</p>#}
+{#        <p><label for="id_staff_number">Staff Number:</label><input id="id_staff_number" name="staff_number"#}
+{#                                                                     value="{{ user.staff_number }}" type="text" />#}
+{#        </p>#}
+{#        <p>Please provide your authorising managers email address</p>#}
+{#        <p><label for="id_manager_email">Managers email:</label><input id="id_manager_email" name="manager_email"#}
+{#                                                                       value="{{ user.manager_email }}" type="text"#}
+{#            />@amadeus.com</p>#}
+{#        <input type="submit" value="Update" />#}
+{#        <input type="hidden" name="next" value="{{ next }}" />#}
+{#        </form>#}
+{#        <br>#}
+{#        <p><a id="id_change_password" href="{% url 'accounts:password-change' %}">Change password</a></p>#}
+{##}
+{#    {% endblock %}#}
+{#</body>#}
