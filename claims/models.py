@@ -31,7 +31,7 @@ class ClaimType(NamedModel):
         return not self.count
 
     def __str__(self):
-        return self.name + (' value is a count of occurances' if self.count else ' value is the total number of hours')
+        return self.name
 
 
 class Claim(TimeStampedModel):

@@ -60,3 +60,7 @@ html {
 .rederror, .errorlist {
     color: red;
 }
+
+.clickable-row {
+    cursor: pointer;
+}

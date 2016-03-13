@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}New Claim{% endblock %}
+<body>
+{% block content %}
+    <div class="row">
+    <div class="col-md-2 col-centered"></div>
+        <div class="col-md-4 col-centered">
+            {% if error %}
+                <p class="rederror">{{ error|safe }}</p>
+            {% endif %}
+            {{ claim.as_p }}
+            <form method="post" action="{% url 'claims:new_claim' %}">
+                {% csrf_token %}
+
+                {{ form|crispy }}
+
+                <input id="id_save_claim_button" class="btn, btn-primary" type="submit" value="Update Claim">
+            </form>
+        </div>
+    </div>
+{% endblock %}
+</body>

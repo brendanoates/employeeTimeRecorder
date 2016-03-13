@@ -1,0 +1,3 @@
+The fixtures for testing were created with the following manage.py task:
+dumpdata admin auth.group auth.permission claims profiles --natural-primary --natural-foreign
+The results were stored in the /core/fixtures/fixtures_for_test.json

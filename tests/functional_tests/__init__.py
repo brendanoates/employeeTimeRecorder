@@ -1,5 +1,5 @@
 HR_USER = 'HR'
-SUPER_USER = 'Super.user'
+SUPER_USER = 'SuperUser'
 USER1 = 'Normal.user1'
 USER2 = 'Normal.user2'
 USER3 = 'Normal.user3'
@@ -9,3 +9,4 @@ MANAGER3 = 'Manager3'
 SENIOR_MANAGER1 = 'Senior.manager1'
 SENIOR_MANAGER2 = 'Senior.manager2'
 PASSWORD = 'pa55word'
+fixtures = ['claims_test.json', 'profiles_test.json', 'fixtures_for_test.json']

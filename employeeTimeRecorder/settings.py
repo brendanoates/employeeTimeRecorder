@@ -38,11 +38,13 @@ INSTALLED_APPS = [
     # third party apps
     'bootstrap3_datetime',
     'crispy_forms',
+    'django_extensions',
     # my apps
     'accounts',
     'claims',
     'core',
     'profiles',
+
 
 ]
 
