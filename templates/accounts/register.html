@@ -13,11 +13,11 @@
             <form method="post" action="{% url 'accounts:accounts-register' %}">
                 {% csrf_token %}
                 <p>Please use the first part of your email address as your username e.g. if your email address is
-                    my.name@amadeus use my.name as your username</p>
+                    my.name@myemail.com use my.name as your username</p>
                 {{ form|crispy }}
                 <p>Please provide your authorising managers email address</p>
                 <p><label for="id_manager_email">Managers email:</label><input id="id_manager_email" name="manager_email"
-                                                                       type="text" />@amadeus.com</p>
+                                                                       type="text" />@emailaddress.com</p>
                 <input class="btn, btn-primary" type="submit" value="Register">
             </form>
         </div>

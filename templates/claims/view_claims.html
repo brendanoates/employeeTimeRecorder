@@ -33,7 +33,7 @@
      <div class="pagination">
         <span class="step-links">
             {% if claims.has_previous %}
-                <a href="?page={{ claims.previous_page_number }}">previous</a>
+                <a id="id_previous_page" href="?page={{ claims.previous_page_number }}">previous</a>
             {% endif %}
 
             <span class="current">
@@ -41,8 +41,7 @@
             </span>
 
             {% if claims.has_next %}
-                <a id="id_next_page
-                " href="?page={{ claims.next_page_number }}">next</a>
+                <a id="id_next_page" href="?page={{ claims.next_page_number }}">next</a>
             {% endif %}
         </span>
 </div>

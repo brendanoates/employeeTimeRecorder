@@ -1,5 +1,5 @@
 HR_USER = 'HR'
-SUPER_USER = 'SuperUser'
+SUPER_USER = 'Super.user'
 USER1 = 'Normal.user1'
 USER2 = 'Normal.user2'
 USER3 = 'Normal.user3'

@@ -9,5 +9,5 @@ class EmployeeTimeRecorderUser(AbstractUser):
     def get_managers_email(self):
         ret_val = None
         if self.manager_email:
-            ret_val = self.manager_email + '@amadeus.com'
+            ret_val = self.manager_email + '@emailaddress.com'
         return ret_val

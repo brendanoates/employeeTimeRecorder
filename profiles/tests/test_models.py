@@ -18,4 +18,4 @@ class EmployeeTimeRecorderUserTest(TestCase):
     def test_get_managers_email(self):
         self.assertEqual(self.user.get_managers_email(), None)
         self.user.manager_email = self.MANAGER_EMAIL
-        self.assertEqual(self.user.get_managers_email(), self.MANAGER_EMAIL + '@amadeus.com')
+        self.assertEqual(self.user.get_managers_email(), self.MANAGER_EMAIL + '@emailaddress.com')
