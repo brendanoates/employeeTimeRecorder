@@ -60,5 +60,5 @@ def view_claim(request, claim_id):
     else:
         form = ClaimForm(initial = {'authorising_manager' : claim.authorising_manager, 'date': claim.date,
                                     'type': claim.type, 'value': claim.value})
-    context = {'form': form}
+    context = {'form': form, 'claim': claim}
     return render(request, 'claims/view_claim.html', context)

@@ -14,5 +14,5 @@ class PageTests(TestCase):
         self.assertEqual(found.func, view_claims)
 
     def test_reverse_url_resolves_to_view_claim_view(self):
-        found = resolve(reverse("claims:view_claim"))
+        found = resolve(reverse("claims:view_claim", args=(1,)))
         self.assertEqual(found.func, view_claim)

@@ -11,7 +11,7 @@
                 <p class="rederror">{{ error|safe }}</p>
             {% endif %}
             {{ claim.as_p }}
-            <form method="post" action="{% url 'claims:view_claim' claim.pk %}">
+            <form method="post" action="{% url 'claims:view_claim' claim.id %}">
                 {% csrf_token %}
 
                 {{ form|crispy }}
