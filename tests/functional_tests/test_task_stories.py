@@ -128,7 +128,7 @@ def populate_database():
 
     for x in range(1,21):
         claim = Claim(type= ClaimType.objects.all()[0], owner= normal_user1, authorising_manager=manager1,
-                      date= datetime(2016,1,x), value=1)
+                      date= datetime(2016,1,x), claim_value=1)
         claim.save()
 
 
@@ -337,7 +337,7 @@ class TaskTestCases(StaticLiveServerTestCase):
         self.browser.find_element_by_id('id_type').click()
         self.browser.find_element_by_id('id_type').send_keys(Keys.ARROW_DOWN)
         self.browser.find_element_by_id('id_type').click()
-        self.browser.find_element_by_id('id_value').send_keys('1')
+        self.browser.find_element_by_id('id_claim_value').send_keys('1')
         self.browser.find_element_by_id('id_save_claim_button').click()
         # todo need to add a test to ensure we are now on correct page following an add claim
         # Task D story 3

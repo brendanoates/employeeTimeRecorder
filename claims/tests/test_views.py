@@ -24,6 +24,6 @@ class SimpleTest(TestCase):
         self.assertEqual(response.status_code, 200)
         # Create an instance of a POST request.
         request = self.factory.post(reverse('claims:new_claim'), {'authorising_maager': ['1'], 'date': ['21 March 2016'],
-                                                                  'type': ['1'], 'value': ['1']})
+                                                                  'type': ['1'], 'claim_value': ['1']})
         response = new_claim(request)
         self.assertEqual(response.status_code, 200)

@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                     ('created', models.DateTimeField(auto_now_add=True)),
                     ('modified', models.DateTimeField(auto_now=True)),
                     ('date', models.DateTimeField()),
-                    ('value', models.FloatField()),
+                    ('claim_value', models.FloatField()),
                     ('processed', models.BooleanField(db_index=True)),
                     ('authorising_manager',
                      models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,

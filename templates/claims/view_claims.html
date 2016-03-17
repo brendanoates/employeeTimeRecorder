@@ -5,46 +5,65 @@
 <body>
 {% block content %}
     <div class="row">
-{#    <div class="col-md-2 col-centered"></div>#}
+        <div class="col-md-2 col-centered" >
+            <div class="cliente">
+            <form method="post" action="{% url 'claims:view_claims' %}">
+                {% csrf_token %}
+
+                {{ claim_filter|crispy }}
+
+                <button id="id_claim_filter_button" class="btn, btn-primary" type="submit" name ="Filter">
+                       Apply Filter</button>
+
+            </form>
+                </div>
+        </div>
         <div class="col-md-8 col-centered">
-        <div class="table-responsive">
-        <table class="table table-striped table-hover">
-            <thead>
-            <tr>
-                <th>Date</th>
-                <th>Claim Type</th>
-                <th>Authorising Manager</th>
-            </tr>
-            </thead>
-            <tbody>
-                {% for claim in claims %}
-                    <tr class='clickable-row' data-href="{% url 'claims:view_claim' claim.id %}">
-                        <td>{{ claim.date|date:"D d M Y" }} </td>
-                        <td>{{ claim.type }}</td>
-                        <td>{{ claim.authorising_manager }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        </div>
-        </div>
+            <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Claim Type</th>
+                    <th>Authorising Manager</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for claim in claims %}
+                        {% if claim.authorised %}
+                            <tr class="authorised-row">
+                                <td>{{ claim.date|date:"D d M Y" }} </td>
+                                <td>{{ claim.type }}</td>
+                                <td>{{ claim.authorising_manager }}</td>
+                            </tr>
+                        {% else %}
+                            <tr class='clickable-row' data-href="{% url 'claims:view_claim' claim.id %}">
+                                <td>{{ claim.date|date:"D d M Y" }} </td>
+                                <td>{{ claim.type }}</td>
+                                <td>{{ claim.authorising_manager }}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+            <div class="pagination">
+                <span class="step-links">
+                    {% if claims.has_previous %}
+                        <a id="id_previous_page" href="?page={{ claims.previous_page_number }}">previous</a>
+                    {% endif %}
 
+                    <span class="current">
+                        Page {{ claims.number }} of {{ claims.paginator.num_pages }}.
+                    </span>
+
+                    {% if claims.has_next %}
+                        <a id="id_next_page" href="?page={{ claims.next_page_number }}">next</a>
+                    {% endif %}
+                </span>
+            </div>
+         </div>
     </div>
-     <div class="pagination">
-        <span class="step-links">
-            {% if claims.has_previous %}
-                <a id="id_previous_page" href="?page={{ claims.previous_page_number }}">previous</a>
-            {% endif %}
-
-            <span class="current">
-                Page {{ claims.number }} of {{ claims.paginator.num_pages }}.
-            </span>
-
-            {% if claims.has_next %}
-                <a id="id_next_page" href="?page={{ claims.next_page_number }}">next</a>
-            {% endif %}
-        </span>
-</div>
 {% endblock %}
 </body>
 

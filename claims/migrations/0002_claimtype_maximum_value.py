@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
                 model_name='claimtype',
                 name='maximum_value',
-                field=models.FloatField(default=1, help_text='The maximum value a claim of this type can hold'),
+                field=models.FloatField(default=1, help_text='The maximum claim_value a claim of this type can hold'),
         ),
     ]

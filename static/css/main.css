@@ -64,3 +64,18 @@ html {
 .clickable-row {
     cursor: pointer;
 }
+
+.authorised-row {
+    color: blue;
+}
+
+.cliente {
+
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+	border: #cdcdcd medium solid;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+}

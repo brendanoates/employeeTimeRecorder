@@ -132,6 +132,6 @@ class Command(BaseCommand):
 
         for x in range(1,21):
             claim = Claim(type= ClaimType.objects.all()[0], owner= normal_user1, authorising_manager=manager1,
-                          date= datetime(2016,1,x), value=1)
+                          date= datetime(2016,1,x), claim_value=1)
             claim.save()
 
