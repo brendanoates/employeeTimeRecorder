@@ -133,16 +133,7 @@ def populate_database():
 
 
 
-class TaskTestCases(StaticLiveServerTestCase):
-    # fixtures = ['fixtures_for_test.json']
-
-    @contextmanager
-    def wait_for_page_load(self, timeout=30):
-        old_page = self.browser.find_element_by_tag_name('html')
-        yield
-        WebDriverWait(self.browser, timeout).until(
-            staleness_of(old_page)
-        )
+class TaskTestCasesB(StaticLiveServerTestCase):
 
     def setUp(self):
         populate_database()
@@ -196,7 +187,18 @@ class TaskTestCases(StaticLiveServerTestCase):
         self.browser.get('{}{}'.format(self.live_server_url, '/admin/logout/'))
 
 
-    def test_task_C(self):
+class TaskTestCasesC(StaticLiveServerTestCase):
+
+    def setUp(self):
+        populate_database()
+        self.browser = webdriver.Chrome()
+
+    def tearDown(self):
+        # logout
+        self.browser.get('{}{}'.format(self.live_server_url, '/admin/logout/'))
+        self.browser.quit()
+
+    def test_task_C1(self):
         '''
         Task C test cases
         '''
@@ -221,6 +223,8 @@ class TaskTestCases(StaticLiveServerTestCase):
         user_password.send_keys(Keys.ENTER)
         self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Home')))
         self.assertIn('welcome new.user', self.browser.find_element_by_id('bs-navbar-collapse-1').text)
+
+    def test_task_C3(self):
         # Task C story 3
         # As the maintainer of the site I want a log any time a new users registers containing their IP address to help
         # me identify inappropriate usage of registration.
@@ -229,6 +233,8 @@ class TaskTestCases(StaticLiveServerTestCase):
             for line in log:
                 last_line = line
         self.assertIn('new user: new.user added, IP: ', last_line)
+
+    def test_task_C2(self):
         # Task C story 2
         # As a registering user if my username is already in use I want to be informed.
         logout_link = self.browser.find_element_by_id('id_logout')
@@ -358,3 +364,54 @@ class TaskTestCases(StaticLiveServerTestCase):
         self.browser.find_element_by_id('id_next_page').click()
         WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_previous_page')))
         # I want to display a view of my claim when I click on it in the list
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.CLASS_NAME, 'clickable-row')))
+        self.browser.find_element_by_class_name('clickable-row').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('View Claim'))
+        # I want to be able to filter my list of views.
+        self.browser.find_element_by_id('id_home').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Home'))
+        self.browser.find_element_by_id('view_claims_button').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Claims View'))
+        self.browser.find_element_by_id('id_authorised').click()
+        self.browser.find_element_by_id('id_claim_filter_button').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Claims View'))
+        self.assertNotIn('class="clickable-row"',self.browser.page_source)
+        self.browser.find_element_by_id('id_claim_filter_button').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Claims View'))
+        self.assertIn('Sat 09 Jan 2016',self.browser.page_source)
+        self.assertIn('Fri 01 Jan 2016',self.browser.page_source)
+        self.browser.find_element_by_id('id_date_after').send_keys('02 Jan 2016')
+        self.browser.find_element_by_id('id_date_before').send_keys('07 Jan 2016')
+        self.browser.find_element_by_id('id_claim_filter_button').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Claims View'))
+        self.assertIn('Sun 03 Jan 2016',self.browser.page_source)
+        self.assertNotIn('Fri 08 Jan 2016',self.browser.page_source)
+        self.assertNotIn('Fri 01 Jan 2016',self.browser.page_source)
+        self.browser.find_element_by_id('id_type').click()
+        self.browser.find_element_by_id('id_type').send_keys(Keys.ARROW_DOWN)
+        self.browser.find_element_by_id('id_type').click()
+        self.browser.find_element_by_id('id_claim_filter_button').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Claims View'))
+        self.assertIn('Bank Holiday Hours',self.browser.page_source)
+        # I want to be able to update my claim when viewed if not authorised
+        self.browser.find_element_by_id('id_home').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Home'))
+        self.browser.find_element_by_id('view_claims_button').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Claims View'))
+        self.browser.find_element_by_class_name('clickable-row').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('View Claim'))
+        self.browser.find_element_by_id('id_authorising_manager').click()
+        self.browser.find_element_by_id('id_authorising_manager').send_keys(Keys.ARROW_DOWN)
+        self.browser.find_element_by_id('id_authorising_manager').send_keys(Keys.ARROW_DOWN)
+        self.browser.find_element_by_id('id_authorising_manager').click()
+        self.browser.find_element_by_id('id_save_claim_button').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Home'))
+        # I want to be able to delete a claim
+        self.browser.find_element_by_id('id_home').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Home'))
+        self.browser.find_element_by_id('view_claims_button').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Claims View'))
+        self.browser.find_element_by_class_name('clickable-row').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('View Claim'))
+        self.browser.find_element_by_id('id_delete_claim_button').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Home'))

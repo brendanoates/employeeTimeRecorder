@@ -5,8 +5,8 @@
 <body>
 {% block content %}
     <div class="row">
-        <div class="col-md-2 col-centered" >
-            <div class="cliente">
+        <div class="col-md-3 col-centered" >
+            <div class="smooth_border">
             <form method="post" action="{% url 'claims:view_claims' %}">
                 {% csrf_token %}
 
@@ -30,14 +30,22 @@
                 </thead>
                 <tbody>
                     {% for claim in claims %}
-                        {% if claim.authorised %}
-                            <tr class="authorised-row">
+                        {% if claim.senior_authorised%}
+                            <tr class="senior-authorised-row" title="This claim has been authorised by senior
+                            management">
+                                <td>{{ claim.date|date:"D d M Y" }} </td>
+                                <td>{{ claim.type }}</td>
+                                <td>{{ claim.authorising_manager }}</td>
+                            </tr>
+                        {% elif   claim.authorised %}
+                            <tr class="authorised-row" title="This claim has been authorised">
                                 <td>{{ claim.date|date:"D d M Y" }} </td>
                                 <td>{{ claim.type }}</td>
                                 <td>{{ claim.authorising_manager }}</td>
                             </tr>
                         {% else %}
-                            <tr class='clickable-row' data-href="{% url 'claims:view_claim' claim.id %}">
+                            <tr class='clickable-row' data-href="{% url 'claims:view_claim' claim.id %} t"
+                                title="Click to access claim">
                                 <td>{{ claim.date|date:"D d M Y" }} </td>
                                 <td>{{ claim.type }}</td>
                                 <td>{{ claim.authorising_manager }}</td>

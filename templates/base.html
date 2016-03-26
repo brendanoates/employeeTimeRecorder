@@ -47,6 +47,7 @@
                     <li><p>welcome <a id='id_account' href="{% url 'profiles:profiles' %}"
                                       title="Click to update account details">{{ user.username }}</a>
                     </p></li>
+                    <li><a id='id_home' href="{% url 'index' %}" title="return to home page">Home</a></li>
                     <li><a id='id_logout' href="{% url 'accounts:accounts-logout' %}" title="Click to log out">Logout
                     </a></li>
                     {% if user.is_staff %}
@@ -89,5 +90,6 @@
     });
     </script>
     {{ form.media }}
+    {{ claim_filter.media }}
     </body>
 </html>

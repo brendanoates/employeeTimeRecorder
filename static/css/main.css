@@ -66,10 +66,13 @@ html {
 }
 
 .authorised-row {
-    color: blue;
+    color: #06d3ff;
+}
+.senior-authorised-row {
+    color: #179313;
 }
 
-.cliente {
+.smooth_border {
 
     padding-left: 10px;
     padding-right: 10px;

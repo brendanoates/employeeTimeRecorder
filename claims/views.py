@@ -40,6 +40,12 @@ def view_claims(request):
         data = claim_filter.cleaned_data
         if data.get('authorised'):
             claims = claims.filter(authorised=True)
+        if data.get('date_after'):
+            claims = claims.filter(date__gt=data.get('date_after'))
+        if data.get('date_before'):
+            claims = claims.filter(date__lt=data.get('date_before'))
+        if data.get('type'):
+            claims = claims.filter(type=data.get('type'))
     else:
         claims = Claim.objects.filter(owner=request.user).order_by('date')
     paginator = Paginator(claims, 10) # Show 14 claimsnj per page
