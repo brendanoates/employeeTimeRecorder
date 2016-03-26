@@ -27,6 +27,10 @@ class ClaimForm(ModelForm):
                                                                                   "applies to",
                            widget=DateTimePicker(options={"format": "DD MMMM YYYY", "size": 12}))
 
+    class Meta:
+        model = Claim
+        exclude = ['owner', 'processed', 'senior_manager', 'authorised', 'senior_authorised']
+
     def clean(self):
         cleaned_data = super(ClaimForm, self).clean()
         type = cleaned_data.get('type')
@@ -48,9 +52,6 @@ class ClaimForm(ModelForm):
                                                                      authorising_manager=authorising_manager):
             raise forms.ValidationError('You have already made a claim for this type on this date')
 
-    class Meta:
-        model = Claim
-        exclude = ['owner', 'processed', 'senior_manager', 'authorised', 'senior_authorised']
 
 
 class FilterClaimForm(forms.Form):

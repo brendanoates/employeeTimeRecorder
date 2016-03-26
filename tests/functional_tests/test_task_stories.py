@@ -148,12 +148,11 @@ class TaskTestCasesB(StaticLiveServerTestCase):
     Task B test cases
     '''
 
-    def test_login(self):
-        self.browser.get('{}{}'.format(self.live_server_url, '/admin/login/'))
-        self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Log in | Django site admin')))
-
+    def test_taskb_story1(self):
         # Task b Story 1
         # As a staff user I want log into the system and access the admin section of the project
+        self.browser.get('{}{}'.format(self.live_server_url, '/admin/login/'))
+        self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Log in | Django site admin')))
         user_id = self.browser.find_element_by_id('id_username')
         user_password = self.browser.find_element_by_id('id_password')
         user_id.send_keys(HR_USER)
@@ -162,6 +161,8 @@ class TaskTestCasesB(StaticLiveServerTestCase):
         self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Site administration | Django site admin')))
         self.browser.get('{}{}'.format(self.live_server_url, '/admin/logout/'))
         self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Logged out | Django site admin')))
+
+    def test_taskb_story2(self):
         # Task b Story 2
         # As a super user I want log into the system and access the admin section of the project
         self.browser.get('{}{}'.format(self.live_server_url, '/admin/login/'))
@@ -174,6 +175,8 @@ class TaskTestCasesB(StaticLiveServerTestCase):
         self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Site administration | Django site admin')))
         self.browser.get('{}{}'.format(self.live_server_url, '/admin/logout/'))
         self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Logged out | Django site admin')))
+
+    def test_taskb_story3(self):
         # Task b Story 3
         # As a normal user I want log into the system but not be able to access the admin section
         self.browser.get('{}{}'.format(self.live_server_url, '/admin/login/'))
@@ -187,7 +190,19 @@ class TaskTestCasesB(StaticLiveServerTestCase):
         self.browser.get('{}{}'.format(self.live_server_url, '/admin/logout/'))
 
 
+
+
+
 class TaskTestCasesC(StaticLiveServerTestCase):
+
+    def _login_user(self):
+        self.browser.get('{}{}'.format(self.live_server_url, reverse('accounts:accounts-login')))
+        user_id = self.browser.find_element_by_id('id_username')
+        user_password = self.browser.find_element_by_id('id_password')
+        user_id.send_keys(USER1)
+        user_password.send_keys(PASSWORD)
+        user_password.send_keys(Keys.ENTER)
+        self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Home')))
 
     def setUp(self):
         populate_database()
@@ -198,17 +213,15 @@ class TaskTestCasesC(StaticLiveServerTestCase):
         self.browser.get('{}{}'.format(self.live_server_url, '/admin/logout/'))
         self.browser.quit()
 
-    def test_task_C1(self):
+    def test_taskc_story1(self):
         '''
         Task C test cases
         '''
-        self.browser.get('{}{}'.format(self.live_server_url, '/accounts/logout/'))
-        WebDriverWait(self.browser, 10).until(ec.title_is('Logged Out'))
-        self.browser.get('{}{}'.format(self.live_server_url, ''))
         # self.browser.maximize_window()
         # Task C story 1 and 4
         # As a potential user I want to register on the site as a user with a unique user id and password.
         # As a user I want to have the ability to include my staff number and managers email when registering.
+        self.browser.get('{}{}'.format(self.live_server_url, ''))
         register_link = self.browser.find_element_by_id('id_register')
         register_link.click()
         self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Registration')))
@@ -224,7 +237,7 @@ class TaskTestCasesC(StaticLiveServerTestCase):
         self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Home')))
         self.assertIn('welcome new.user', self.browser.find_element_by_id('bs-navbar-collapse-1').text)
 
-    def test_task_C3(self):
+    def test_taskc_story3(self):
         # Task C story 3
         # As the maintainer of the site I want a log any time a new users registers containing their IP address to help
         # me identify inappropriate usage of registration.
@@ -237,9 +250,6 @@ class TaskTestCasesC(StaticLiveServerTestCase):
     def test_task_C2(self):
         # Task C story 2
         # As a registering user if my username is already in use I want to be informed.
-        logout_link = self.browser.find_element_by_id('id_logout')
-        logout_link.click()
-        self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Logged Out')))
         self.browser.get('{}{}'.format(self.live_server_url, ''))
         register_link = self.browser.find_element_by_id('id_register')
         register_link.click()
@@ -252,11 +262,13 @@ class TaskTestCasesC(StaticLiveServerTestCase):
         self.assertTrue(WebDriverWait(self.browser, 10).until(ec.text_to_be_present_in_element((By.ID, 'error_message'),
                                                                                                'This username has '
                                                                                                'already been taken')))
-        # test_login
-        self.browser.get('{}{}'.format(self.live_server_url, ''))
-        self.assertEquals(self.browser.title, 'Login')
+
+    # test_login
+    def test_task_C5(self):
         # Task C story 5
         # As a registered user I want to be able to log in
+        self.browser.get('{}{}'.format(self.live_server_url, ''))
+        self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Login')))
         user_id = self.browser.find_element_by_id('id_username')
         user_password = self.browser.find_element_by_id('id_password')
         user_id.send_keys(USER1)
@@ -266,6 +278,8 @@ class TaskTestCasesC(StaticLiveServerTestCase):
         logout_link = self.browser.find_element_by_id('id_logout')
         logout_link.click()
         self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Logged Out')))
+
+    def test_task_C6(self):
         # Task C story 6
         # As a registered staff user I want to be able to log in and access the admin backend
         self.browser.get('{}{}'.format(self.live_server_url, ''))
@@ -279,16 +293,10 @@ class TaskTestCasesC(StaticLiveServerTestCase):
         self.browser.find_element_by_id('id_admin').click()
         self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Site administration | Django site admin')))
 
+    def test_task_C7(self):
         # test_profile_update
         # Task C7.	As a logged in user I want to be able to change my staff number and managers email
-        self.browser.get('{}{}'.format(self.live_server_url, reverse('accounts:accounts-logout')))
-        self.browser.get('{}{}'.format(self.live_server_url, reverse('accounts:accounts-login')))
-        user_id = self.browser.find_element_by_id('id_username')
-        user_password = self.browser.find_element_by_id('id_password')
-        user_id.send_keys(USER1)
-        user_password.send_keys(PASSWORD)
-        user_password.send_keys(Keys.ENTER)
-        self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Home')))
+        self._login_user()
         self.browser.find_element_by_id('id_account').click()
         self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Profile')))
         self.browser.find_element_by_id('id_staff_number').send_keys('54321')
@@ -297,8 +305,11 @@ class TaskTestCasesC(StaticLiveServerTestCase):
         self.browser.find_element_by_id('id_manager_email').send_keys(MANAGER2)
         self.browser.find_element_by_id('update_profile_button').click()
         self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Home')))
+
+    def test_task_C8(self):
         # Task C story 8
         # As a logged in user I want to be able to change my password
+        self._login_user()
         self.browser.find_element_by_id('id_account').click()
         self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Profile')))
         self.browser.find_element_by_id('id_change_password').click()
@@ -310,7 +321,27 @@ class TaskTestCasesC(StaticLiveServerTestCase):
         self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Password changed')))
 
 
-    def test_task_D(self):
+class TaskTestCasesD(StaticLiveServerTestCase):
+
+    def _login_user(self):
+        self.browser.get('{}{}'.format(self.live_server_url, reverse('accounts:accounts-login')))
+        user_id = self.browser.find_element_by_id('id_username')
+        user_password = self.browser.find_element_by_id('id_password')
+        user_id.send_keys(USER1)
+        user_password.send_keys(PASSWORD)
+        user_password.send_keys(Keys.ENTER)
+        self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Home')))
+
+    def setUp(self):
+        populate_database()
+        self.browser = webdriver.Chrome()
+
+    def tearDown(self):
+        # logout
+        self.browser.get('{}{}'.format(self.live_server_url, '/admin/logout/'))
+        self.browser.quit()
+
+    def test_task_D1(self):
         '''
         Task D test cases
         '''
@@ -327,15 +358,11 @@ class TaskTestCasesC(StaticLiveServerTestCase):
         self.browser.find_element_by_id('id_admin').click()
         WebDriverWait(self.browser, 10).until(ec.title_is('Site administration | Django site admin'))
         self.assertIn('Claim types', self.browser.find_element_by_class_name('model-claimtype').text)
+
+    def test_task_D2(self):
         # Task D story 2
         # As a logged in employee I want to be able to add a new claim
-        self.browser.get('{}{}'.format(self.live_server_url, '/accounts/logout/'))
-        WebDriverWait(self.browser, 10).until(ec.title_is('Logged Out'))
-        self.browser.get('{}{}'.format(self.live_server_url, ''))
-        WebDriverWait(self.browser, 10).until(ec.title_is('Login'))
-        self.browser.find_element_by_id('id_username').send_keys(USER1)
-        self.browser.find_element_by_id('id_password').send_keys(PASSWORD)
-        self.browser.find_element_by_id('id_password').send_keys(Keys.ENTER)
+        self._login_user()
         WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'new_claim_button')))
         self.browser.find_element_by_id('new_claim_button').click()
         WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_authorising_manager')))
@@ -346,28 +373,42 @@ class TaskTestCasesC(StaticLiveServerTestCase):
         self.browser.find_element_by_id('id_claim_value').send_keys('1')
         self.browser.find_element_by_id('id_save_claim_button').click()
         # todo need to add a test to ensure we are now on correct page following an add claim
+
+    def test_task_D3(self):
         # Task D story 3
         # As a logged in employee I want to be able to see a list of my saved claims.
-        self.browser.get('{}{}'.format(self.live_server_url, '/accounts/logout/'))
-        WebDriverWait(self.browser, 10).until(ec.title_is('Logged Out'))
-        self.browser.get('{}{}'.format(self.live_server_url, ''))
-        WebDriverWait(self.browser, 10).until(ec.title_is('Login'))
-        self.browser.find_element_by_id('id_username').send_keys(USER1)
-        self.browser.find_element_by_id('id_password').send_keys(PASSWORD)
-        self.browser.find_element_by_id('id_password').send_keys(Keys.ENTER)
+        self._login_user()
         WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'view_claims_button')))
         self.browser.find_element_by_id('view_claims_button').click()
         WebDriverWait(self.browser, 10).until(ec.title_is('Claims View'))
+
+    def test_task_D4(self):
         # if there are more than 14 claims I want pagination
+        self._login_user()
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'view_claims_button')))
+        self.browser.find_element_by_id('view_claims_button').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Claims View'))
         WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_next_page')))
         self.assertTrue((ec.text_to_be_present_in_element((By.ID, 'id_next_page'), 'next')))
         self.browser.find_element_by_id('id_next_page').click()
         WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_previous_page')))
+
+    def test_task_D5(self):
         # I want to display a view of my claim when I click on it in the list
+        self._login_user()
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'view_claims_button')))
+        self.browser.find_element_by_id('view_claims_button').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Claims View'))
         WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.CLASS_NAME, 'clickable-row')))
         self.browser.find_element_by_class_name('clickable-row').click()
         WebDriverWait(self.browser, 10).until(ec.title_is('View Claim'))
+
+    def test_task_D6(self):
         # I want to be able to filter my list of views.
+        self._login_user()
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'view_claims_button')))
+        self.browser.find_element_by_id('view_claims_button').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Claims View'))
         self.browser.find_element_by_id('id_home').click()
         WebDriverWait(self.browser, 10).until(ec.title_is('Home'))
         self.browser.find_element_by_id('view_claims_button').click()
@@ -393,9 +434,11 @@ class TaskTestCasesC(StaticLiveServerTestCase):
         self.browser.find_element_by_id('id_claim_filter_button').click()
         WebDriverWait(self.browser, 10).until(ec.title_is('Claims View'))
         self.assertIn('Bank Holiday Hours',self.browser.page_source)
+
+    def test_task_D7(self):
         # I want to be able to update my claim when viewed if not authorised
-        self.browser.find_element_by_id('id_home').click()
-        WebDriverWait(self.browser, 10).until(ec.title_is('Home'))
+        self._login_user()
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'view_claims_button')))
         self.browser.find_element_by_id('view_claims_button').click()
         WebDriverWait(self.browser, 10).until(ec.title_is('Claims View'))
         self.browser.find_element_by_class_name('clickable-row').click()
@@ -406,9 +449,11 @@ class TaskTestCasesC(StaticLiveServerTestCase):
         self.browser.find_element_by_id('id_authorising_manager').click()
         self.browser.find_element_by_id('id_save_claim_button').click()
         WebDriverWait(self.browser, 10).until(ec.title_is('Home'))
+
+    def test_task_D8(self):
         # I want to be able to delete a claim
-        self.browser.find_element_by_id('id_home').click()
-        WebDriverWait(self.browser, 10).until(ec.title_is('Home'))
+        self._login_user()
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'view_claims_button')))
         self.browser.find_element_by_id('view_claims_button').click()
         WebDriverWait(self.browser, 10).until(ec.title_is('Claims View'))
         self.browser.find_element_by_class_name('clickable-row').click()
