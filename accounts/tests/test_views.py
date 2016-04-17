@@ -1,19 +1,18 @@
-from importlib import import_module
-
-from django.conf import settings
-from django.core.urlresolvers import reverse, resolve
-from django.http import HttpRequest
+from django.core.urlresolvers import reverse
 from django.test import Client, TestCase
-from accounts.views import register as registration_page
+
 from profiles.models import EmployeeTimeRecorderUser as User
 
 '''
  Unit test the registration view, must be able to register with a unique user id or receive an error response if id
  is not unique
 '''
+
+
 class RegisterViewTest(TestCase):
     STAFFNUMBER = '12345'
     MANAGER_EMAIL = 'manager.name'
+
     def test_registartion_page_contains_correct_html_(self):
         client = Client()
         response = client.get(reverse('accounts:accounts-register'))
@@ -27,7 +26,7 @@ class RegisterViewTest(TestCase):
         response = client.post(reverse('accounts:accounts-register'),
                                {'username': 'testuser', 'password': 'testpassword'})
         self.assertContains(response, '', status_code=302)
-        self.assertEqual(response.url, reverse('index')) #should redirect to index
+        self.assertEqual(response.url, reverse('index'))  # should redirect to index
         client.get(reverse('accounts:accounts-logout'))
         response = client.post(reverse('accounts:accounts-register'),
                                {'username': 'testuser', 'password': 'testpassword'})
@@ -39,24 +38,28 @@ class RegisterViewTest(TestCase):
                                {'username': 'testuser', 'password': 'testpassword', 'staff_number': self.STAFFNUMBER,
                                 'manager_email': self.MANAGER_EMAIL})
         self.assertContains(response, '', status_code=302)
-        self.assertEqual(response.url, reverse('index')) #should redirect to index
+        self.assertEqual(response.url, reverse('index'))  # should redirect to index
         user = User.objects.get(username='testuser')
         self.assertEqual(user.staff_number, self.STAFFNUMBER)
 
-        self.assertEqual(user.manager_email, self.MANAGER_EMAIL )
+        self.assertEqual(user.manager_email, self.MANAGER_EMAIL)
+
 
 '''
 Unit test the login view must be able to login with valid userid and password or receive an error message.
 '''
+
+
 class LoginViewTest(TestCase):
     USERNAME = 'testuser'
     '''
     create a user to test the login view
     '''
+
     def setUp(self):
         client = Client()
         client.post(reverse('accounts:accounts-register'),
-                               {'username': self.USERNAME, 'password': 'testpassword'})
+                    {'username': self.USERNAME, 'password': 'testpassword'})
         client.get(reverse('accounts:accounts-logout'))
 
     def test_login_page_contains_correct_html(self):
@@ -72,7 +75,7 @@ class LoginViewTest(TestCase):
         response = client.post(reverse('accounts:accounts-login'),
                                {'username': self.USERNAME, 'password': 'testpassword'})
         self.assertContains(response, '', status_code=302)
-        self.assertEqual(response.url, reverse('index')) #should redirect to index
+        self.assertEqual(response.url, reverse('index'))  # should redirect to index
         client.get(reverse('accounts:accounts-logout'))
         response = client.post(reverse('accounts:accounts-login'),
                                {'username': 'failuser', 'password': 'testpassword'})
@@ -86,4 +89,3 @@ class LoginViewTest(TestCase):
         response = client.post(reverse('accounts:accounts-login'),
                                {'username': self.USERNAME, 'password': 'testpassword'})
         self.assertContains(response, "This account has been deactivated", status_code=200)
-

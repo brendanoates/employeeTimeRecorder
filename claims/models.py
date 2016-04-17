@@ -44,11 +44,12 @@ class Claim(TimeStampedModel):
     senior_manager = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='senior manager', null=True,
                                        blank=True, related_name='claim_senior_manager')
     type = models.ForeignKey(ClaimType, verbose_name='related type')
-    date = models.DateTimeField()
+    date = models.DateField()
     claim_value = models.FloatField()
     authorised = models.BooleanField(db_index=True, default=False)
     senior_authorised = models.BooleanField(db_index=True, default=False)
     processed = models.BooleanField(db_index=True, default=False)
 
     def __str__(self):
-        return ', '.join([self.owner.get_username(), str(self.date), str(self.type), ('claim_value: ' + str(self.claim_value))])
+        return ', '.join(
+            [self.owner.get_username(), str(self.date), str(self.type), ('claim_value: ' + str(self.claim_value))])

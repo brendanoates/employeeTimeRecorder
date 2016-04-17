@@ -1,4 +1,3 @@
-from contextlib import contextmanager
 from datetime import datetime
 
 from django.conf import settings
@@ -12,12 +11,11 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as ec
-from selenium.webdriver.support.expected_conditions import staleness_of
 from selenium.webdriver.support.wait import WebDriverWait
 
 from claims.models import Claim, ClaimType
 from profiles.models import EmployeeTimeRecorderUser
-from tests.functional_tests import PASSWORD, HR_USER, SUPER_USER, USER1, MANAGER2
+from tests.functional_tests import PASSWORD, HR_USER, SUPER_USER, USER1, MANAGER2, MANAGER1
 
 
 def populate_database():
@@ -27,14 +25,14 @@ def populate_database():
     content_type = ContentType.objects.get_for_model(Claim)
     try:
         auth_claim = Permission.objects.create(codename='authorise_claim',
-                                  name='Can authorise claim',
-                                  content_type=content_type)
+                                               name='Can authorise claim',
+                                               content_type=content_type)
     except IntegrityError:
         pass  # already added
     try:
         senior_auth_claim = Permission.objects.create(codename='senior_authorise_claim',
-                                  name='Can senior authorise claim',
-                                  content_type=content_type)
+                                                      name='Can senior authorise claim',
+                                                      content_type=content_type)
     except IntegrityError:
         pass  # already added
 
@@ -97,7 +95,6 @@ def populate_database():
     user.groups.add(manager_group)
     user.save()
 
-
     user = EmployeeTimeRecorderUser.objects.create(username='Senior.manager1', email='test@email.com')
     user.set_password(PASSWORD)
     user.groups.add(senior_manager_group)
@@ -126,15 +123,13 @@ def populate_database():
     user.set_password(PASSWORD)
     user.save()
 
-    for x in range(1,21):
-        claim = Claim(type= ClaimType.objects.all()[0], owner= normal_user1, authorising_manager=manager1,
-                      date= datetime(2016,1,x), claim_value=1)
+    for x in range(1, 21):
+        claim = Claim(type=ClaimType.objects.all()[0], owner=normal_user1, authorising_manager=manager1,
+                      date=datetime(2016, 1, x), claim_value=1)
         claim.save()
 
 
-
 class TaskTestCasesB(StaticLiveServerTestCase):
-
     def setUp(self):
         populate_database()
         self.browser = webdriver.Chrome()
@@ -190,11 +185,7 @@ class TaskTestCasesB(StaticLiveServerTestCase):
         self.browser.get('{}{}'.format(self.live_server_url, '/admin/logout/'))
 
 
-
-
-
 class TaskTestCasesC(StaticLiveServerTestCase):
-
     def _login_user(self):
         self.browser.get('{}{}'.format(self.live_server_url, reverse('accounts:accounts-login')))
         user_id = self.browser.find_element_by_id('id_username')
@@ -322,7 +313,6 @@ class TaskTestCasesC(StaticLiveServerTestCase):
 
 
 class TaskTestCasesD(StaticLiveServerTestCase):
-
     def _login_user(self):
         self.browser.get('{}{}'.format(self.live_server_url, reverse('accounts:accounts-login')))
         user_id = self.browser.find_element_by_id('id_username')
@@ -372,7 +362,7 @@ class TaskTestCasesD(StaticLiveServerTestCase):
         self.browser.find_element_by_id('id_type').click()
         self.browser.find_element_by_id('id_claim_value').send_keys('1')
         self.browser.find_element_by_id('id_save_claim_button').click()
-        # todo need to add a test to ensure we are now on correct page following an add claim
+        WebDriverWait(self.browser, 10).until(ec.title_is('Home'))
 
     def test_task_D3(self):
         # Task D story 3
@@ -416,24 +406,24 @@ class TaskTestCasesD(StaticLiveServerTestCase):
         self.browser.find_element_by_id('id_authorised').click()
         self.browser.find_element_by_id('id_claim_filter_button').click()
         WebDriverWait(self.browser, 10).until(ec.title_is('Claims View'))
-        self.assertNotIn('class="clickable-row"',self.browser.page_source)
+        self.assertNotIn('class="clickable-row"', self.browser.page_source)
         self.browser.find_element_by_id('id_claim_filter_button').click()
         WebDriverWait(self.browser, 10).until(ec.title_is('Claims View'))
-        self.assertIn('Sat 09 Jan 2016',self.browser.page_source)
-        self.assertIn('Fri 01 Jan 2016',self.browser.page_source)
+        self.assertIn('Sat 09 Jan 2016', self.browser.page_source)
+        self.assertIn('Fri 01 Jan 2016', self.browser.page_source)
         self.browser.find_element_by_id('id_date_after').send_keys('02 Jan 2016')
         self.browser.find_element_by_id('id_date_before').send_keys('07 Jan 2016')
         self.browser.find_element_by_id('id_claim_filter_button').click()
         WebDriverWait(self.browser, 10).until(ec.title_is('Claims View'))
-        self.assertIn('Sun 03 Jan 2016',self.browser.page_source)
-        self.assertNotIn('Fri 08 Jan 2016',self.browser.page_source)
-        self.assertNotIn('Fri 01 Jan 2016',self.browser.page_source)
+        self.assertIn('Sun 03 Jan 2016', self.browser.page_source)
+        self.assertNotIn('Fri 08 Jan 2016', self.browser.page_source)
+        self.assertNotIn('Fri 01 Jan 2016', self.browser.page_source)
         self.browser.find_element_by_id('id_type').click()
         self.browser.find_element_by_id('id_type').send_keys(Keys.ARROW_DOWN)
         self.browser.find_element_by_id('id_type').click()
         self.browser.find_element_by_id('id_claim_filter_button').click()
         WebDriverWait(self.browser, 10).until(ec.title_is('Claims View'))
-        self.assertIn('Bank Holiday Hours',self.browser.page_source)
+        self.assertIn('Bank Holiday Hours', self.browser.page_source)
 
     def test_task_D7(self):
         # I want to be able to update my claim when viewed if not authorised
@@ -460,3 +450,43 @@ class TaskTestCasesD(StaticLiveServerTestCase):
         WebDriverWait(self.browser, 10).until(ec.title_is('View Claim'))
         self.browser.find_element_by_id('id_delete_claim_button').click()
         WebDriverWait(self.browser, 10).until(ec.title_is('Home'))
+
+
+class TaskTestCasesE(StaticLiveServerTestCase):
+    def _login_user(self):
+        self.browser.get('{}{}'.format(self.live_server_url, reverse('accounts:accounts-login')))
+        user_id = self.browser.find_element_by_id('id_username')
+        user_password = self.browser.find_element_by_id('id_password')
+        user_id.send_keys(MANAGER1)
+        user_password.send_keys(PASSWORD)
+        user_password.send_keys(Keys.ENTER)
+        self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Home')))
+
+    def setUp(self):
+        populate_database()
+        self.browser = webdriver.Chrome()
+
+    def tearDown(self):
+        # logout
+        self.browser.get('{}{}'.format(self.live_server_url, '/admin/logout/'))
+        self.browser.quit()
+
+    def test_task_E1(self):
+        '''
+        Task D test cases
+        '''
+        # Task E story 2
+        # As manager I want view all claims awaiting my authorisation
+        self._login_user()
+        self.browser.find_element_by_id('view_claims_awaiting_authorisation_button').click()
+        self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Authorisation Claims View')))
+
+    def test_task_E2(self):
+        '''
+        Task E test cases
+        '''
+        # Task E story 2
+        # As manager I want to be view all claims awaiting my authorisation  with pagination
+        self._login_user()
+        self.browser.find_element_by_id('view_claims_awaiting_authorisation_button').click()
+        self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Authorisation Claims View')))

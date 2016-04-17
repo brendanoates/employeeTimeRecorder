@@ -87,9 +87,11 @@
         $(".clickable-row").click(function() {
             window.document.location = $(this).data("href");
         });
+        $("#selectall").change(function(){
+            $(".checkbox1").prop('checked', $(this).prop("checked"));
+        });
     });
     </script>
-    {{ form.media }}
-    {{ claim_filter.media }}
+    {% block forms %}{% endblock %}
     </body>
 </html>

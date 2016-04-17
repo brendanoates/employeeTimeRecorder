@@ -1,41 +1,46 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from claims.forms import ClaimForm
+from claims.forms import NewClaimForm
 from claims.models import ClaimType
+from profiles.models import EmployeeTimeRecorderUser
+from tests.functional_tests.test_task_stories import populate_database
 
 
 class ClientFormTest(TestCase):
 
     def setUp(self):
-        user = get_user_model().objects.create_user('testuser')
+        populate_database()
+        self.user = get_user_model().objects.create_user('testuser')
+        self.manager = EmployeeTimeRecorderUser.objects.get(username='Manager1')
+
         self.claim_type1 = ClaimType(name='type1', count=False)
 
-    def test_init(self):
-        ClaimForm(type=self.claim_type1)
-
-    def test_init_without_entry(self):
-        with self.assertRaises(KeyError):
-            ClaimForm()
-
     def test_valid_data(self):
-        form = ClaimForm({
-            'name': "Turanga Leela",
-            'email': "leela@example.com",
-            'body': "Hi there",
-        }, entry=self.entry)
+        form = NewClaimForm(
+            {'authorising_manager': 3,
+            'type': 1,
+            'claim_value': "1",
+            'date': '28 March 2016'
+        })
         self.assertTrue(form.is_valid())
-        comment = form.save()
-        self.assertEqual(comment.name, "Turanga Leela")
-        self.assertEqual(comment.email, "leela@example.com")
-        self.assertEqual(comment.body, "Hi there")
-        self.assertEqual(comment.entry, self.entry)
 
-def test_blank_data(self):
-    form = ClaimForm({}, entry=self.entry)
-    self.assertFalse(form.is_valid())
-    self.assertEqual(form.errors, {
-        'name': ['required'],
-        'email': ['required'],
-        'body': ['required'],
-    })
+    def test_invalid_data1(self):
+        form = NewClaimForm(
+            {'authorising_manager': 3,
+            'type': 8,
+            'claim_value': "1.5",
+            'date': '28 March 2016'
+        })
+        self.assertFalse(form.is_valid())
+
+    def test_invalid_data2(self):
+        form = NewClaimForm(
+            {'authorising_manager': 3,
+            'type': 11,
+            'claim_value': "1.5",
+            'date': '28 March 2016'
+        })
+        self.assertFalse(form.is_valid())
+
+

@@ -3,7 +3,7 @@ from django.core.paginator import Paginator, EmptyPage
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 
-from claims.forms import ClaimForm, FilterClaimForm
+from claims.forms import NewClaimForm, FilterClaimForm, UpdateClaimForm, FilterAuthoriseClaimForm
 from claims.models import Claim
 from profiles.models import EmployeeTimeRecorderUser
 
@@ -13,7 +13,7 @@ def new_claim(request):
 
     context = {}
     if request.method == 'POST':
-        form = ClaimForm(request.POST)
+        form = NewClaimForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
             new_claim = Claim.objects.create(owner=request.user,authorising_manager=data['authorising_manager'],
@@ -26,7 +26,7 @@ def new_claim(request):
             inital_value = EmployeeTimeRecorderUser.objects.get(username=request.user.manager_email)
         except ObjectDoesNotExist:
             inital_value = None
-        form = ClaimForm(initial = {'authorising_manager' : inital_value})
+        form = NewClaimForm(initial = {'authorising_manager' : inital_value})
     context["form"] = form
     return render(request, 'claims/new_claim.html', context)
 
@@ -68,7 +68,7 @@ def view_claim(request, claim_id):
         if 'delete' in request.POST:
             claim.delete()
             return redirect(reverse('index'))
-        form = ClaimForm(request.POST.copy())
+        form = UpdateClaimForm(request.POST.copy(), claim_id=claim_id)
         if form.is_valid():
             data = form.cleaned_data
             claim.authorising_manager = data['authorising_manager']
@@ -78,7 +78,37 @@ def view_claim(request, claim_id):
             claim.save()#we need to save the valid claim
             return redirect(reverse('index'))
     else:
-        form = ClaimForm(initial = {'authorising_manager' : claim.authorising_manager, 'date': claim.date,
+        form = UpdateClaimForm(initial = {'authorising_manager' : claim.authorising_manager, 'date': claim.date,
                                     'type': claim.type, 'claim_value': claim.claim_value})
     context = {'form': form, 'claim': claim}
     return render(request, 'claims/view_claim.html', context)
+
+def authorisation_claims(request):
+    if request.method == 'POST':
+        claim_ids = [key for key in request.POST if 'claim_id' == request.POST.get(key)]
+        if claim_ids:
+            for claim in Claim.objects.filter(id__in=claim_ids):
+                claim.authorised = True
+                claim.save()
+        claim_filter = FilterAuthoriseClaimForm(request.POST.copy())
+        claim_filter.is_valid()
+        data = claim_filter.cleaned_data
+        if data.get('other_manager'):
+            claims = Claim.objects.filter(authorising_manager=data['other_manager'], authorised=False).order_by('date')
+        else:
+            claims = Claim.objects.filter(authorising_manager=request.user, authorised=False).order_by('date')
+    else:
+        claims = Claim.objects.filter(authorising_manager=request.user,
+                                      authorised=False).order_by('date')
+        claim_filter = {}
+        claim_filter = FilterAuthoriseClaimForm()
+    paginator = Paginator(claims, 10) # Show 14 claimsnj per page
+    page = request.GET.get('page')
+    try:
+        claims = paginator.page(page) if page else paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        claims = paginator.page(paginator.num_pages)
+
+    context = {'claims': claims, 'claim_filter': claim_filter}
+    return render(request, 'claims/authorisation_claims.html', context)

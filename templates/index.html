@@ -2,16 +2,25 @@
 {% block title %}Home{% endblock %}
 <body>
     {% block content %}
+        <div class="col-md-2 col-centered" ></div>
+        <div class="col-md-5 col-centered" >
         {% if user.is_authenticated %}
             <!--suppress HtmlUnknownTarget -->
+            {% if perms.claims.authorise_claim %}
+                <p>
+                    <a id= "view_claims_awaiting_authorisation_button" class="btn btn-primary btn-block"
+                       href="/claims/authorisation_claims/" role="button">claims requiring authorisation</a>
+                </p>
+            {% endif %}
             <p>
-                <a id= "view_claims_button" class="btn btn-primary" href="/claims/view_claims/"
+                <a id= "view_claims_button" class="btn btn-primary btn-block" href="/claims/view_claims/"
                    role="button">view your current claims</a>
             </p>
             <p>
-                <a id= "new_claim_button" class="btn btn-primary" href="/claims/new_claim/"
+                <a id= "new_claim_button" class="btn btn-primary btn-block" href="/claims/new_claim/"
                    role="button">create a new claim</a>
             </p>
         {% endif %}
+        </div>
     {% endblock %}
 </body>
