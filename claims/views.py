@@ -1,10 +1,16 @@
+import csv
+
+import time
+from collections import OrderedDict
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage
 from django.core.urlresolvers import reverse
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 from claims.forms import NewClaimForm, FilterClaimForm, UpdateClaimForm, FilterAuthoriseClaimForm
-from claims.models import Claim
+from claims.models import Claim, ClaimType
 from profiles.models import EmployeeTimeRecorderUser
 
 
@@ -88,7 +94,10 @@ def authorisation_claims(request):
         claim_ids = [key for key in request.POST if 'claim_id' == request.POST.get(key)]
         if claim_ids:
             for claim in Claim.objects.filter(id__in=claim_ids):
-                claim.authorised = True
+                if request.user.has_perm('claims.senior_authorise_claim') and claim.authorised:
+                    claim.senior_authorised = True
+                else:
+                    claim.authorised = True
                 claim.save()
         claim_filter = FilterAuthoriseClaimForm(request.POST.copy())
         claim_filter.is_valid()
@@ -96,13 +105,19 @@ def authorisation_claims(request):
         if data.get('other_manager'):
             claims = Claim.objects.filter(authorising_manager=data['other_manager'], authorised=False).order_by('date')
         else:
-            claims = Claim.objects.filter(authorising_manager=request.user, authorised=False).order_by('date')
+            if request.user.has_perm('claims.senior_authorise_claim'):
+                claims = Claim.objects.filter(authorised=True, senior_authorised=False).order_by('date')
+            else:
+                claims = Claim.objects.filter(authorising_manager=request.user, authorised=False).order_by('date')
     else:
-        claims = Claim.objects.filter(authorising_manager=request.user,
+        if request.user.has_perm('claims.senior_authorise_claim'):
+            claims = Claim.objects.filter(authorised=True, senior_authorised=False).order_by('date')
+        else:
+            claims = Claim.objects.filter(authorising_manager=request.user,
                                       authorised=False).order_by('date')
         claim_filter = {}
         claim_filter = FilterAuthoriseClaimForm()
-    paginator = Paginator(claims, 10) # Show 14 claimsnj per page
+    paginator = Paginator(claims, 10) # Show 10 claimsnj per page
     page = request.GET.get('page')
     try:
         claims = paginator.page(page) if page else paginator.page(1)
@@ -112,3 +127,39 @@ def authorisation_claims(request):
 
     context = {'claims': claims, 'claim_filter': claim_filter}
     return render(request, 'claims/authorisation_claims.html', context)
+
+
+def produce_report(request):
+    '''
+    Generate the CSV file for all authorised claims and save to disk..
+    :param request:
+    :return:
+    '''
+    CLAIM_TYPES = ClaimType.objects.values_list('name', flat=True).order_by('name')
+    current_claim_owner = None
+    csv_data_line = OrderedDict()
+    def new_claim_owner(claim_owner):
+        current_claim_owner = claim_owner
+        csv_data_line = OrderedDict([('first_name', claim_owner.first_name), ('last_name', claim_owner.last_name),
+                                    ('staff_number', claim_owner.staff_number)])
+        for claim_type in CLAIM_TYPES:
+            csv_data_line[claim_type] = 0
+        return current_claim_owner, csv_data_line
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="employee_claims{}.csv"'.format(time.strftime("%Y%m%d-%H%M%S"))
+    writer = csv.writer(response)
+    header_list = ['employee first name', 'employee last name', 'employee staff number']
+    header_list += CLAIM_TYPES
+    writer.writerow(header_list)
+    for claim in Claim.objects.filter(senior_authorised=True, processed=False).order_by('owner'):
+        if not claim.owner in [current_claim_owner]:
+            if current_claim_owner: # this is not the first time:
+                writer.writerow(csv_data_line.values)
+            current_claim_owner, csv_data_line = new_claim_owner(claim.owner)
+        csv_data_line[claim.type.name] += claim.claim_value
+        claim.processed = True
+        claim.save()
+    if csv_data_line:
+        writer.writerow(list(csv_data_line.values()))
+    return response

@@ -105,5 +105,5 @@ class FilterAuthoriseClaimForm(forms.Form):
                                                  order_by('username'),
                                            label='Authorising Manager',
                                            help_text='If you want to authorise claims for another manager please '
-                                                     'select there id',
+                                                     'select their id',
                                            required=False)

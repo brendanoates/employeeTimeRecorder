@@ -1,7 +1,7 @@
 from django.core.urlresolvers import reverse, resolve
 from django.test import TestCase
 
-from claims.views import new_claim, view_claims, view_claim, authorisation_claims
+from claims.views import new_claim, view_claims, view_claim, authorisation_claims, produce_report
 
 
 class PageTests(TestCase):
@@ -20,3 +20,7 @@ class PageTests(TestCase):
     def test_reverse_url_resolves_to_authorisation_claims_view(self):
         found = resolve(reverse("claims:authorisation_claims"))
         self.assertEqual(found.func, authorisation_claims)
+
+    def test_reverse_url_resolves_to_produce_report_view(self):
+        found = resolve(reverse("claims:produe_report"))
+        self.assertEqual(found.func, produce_report)

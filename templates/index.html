@@ -6,6 +6,12 @@
         <div class="col-md-5 col-centered" >
         {% if user.is_authenticated %}
             <!--suppress HtmlUnknownTarget -->
+            {% if perms.claims.can_produce_report %}
+                <p>
+                    <a id= "produce_report_button" class="btn btn-primary btn-block"
+                       href="/claims/produce_report/" role="button">produce end of month report</a>
+                </p>
+            {% endif %}
             {% if perms.claims.authorise_claim %}
                 <p>
                     <a id= "view_claims_awaiting_authorisation_button" class="btn btn-primary btn-block"

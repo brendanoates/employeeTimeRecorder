@@ -12,6 +12,14 @@
 
             <form method="post" action="{% url 'profiles:profiles' %}">
                 {% csrf_token %}
+        <p>Please provide your first name</p>
+        <p><label for="id_first_name">First Name:</label><input id="id_first_name" name="first_name"
+                                                                     value="{{ user.first_name }}" type="text" />
+        </p>
+        <p>Please provide your surname</p>
+        <p><label for="id_last_number">Surname:</label><input id="id_last_name" name="last_name"
+                                                                     value="{{ user.last_name }}" type="text" />
+        </p>
         <p>Please provide your staff number as it appears on your pay advice slip if you intend to submit claims</p>
         <p><label for="id_staff_number">Staff Number:</label><input id="id_staff_number" name="staff_number"
                                                                      value="{{ user.staff_number }}" type="text" />

@@ -41,6 +41,12 @@ class Command(BaseCommand):
                                       content_type=content_type)
         except IntegrityError:
             pass  # already added
+        try:
+            produce_report = Permission.objects.create(codename='can_produce_report',
+                                      name='Can produce report',
+                                      content_type=content_type)
+        except IntegrityError:
+            pass  # already added
 
         """
         Create known about claim types
@@ -60,6 +66,7 @@ class Command(BaseCommand):
         perm = Permission.objects.get(name='Can change claim type')
         hr_group = Group.objects.create(name='Human Resources')
         hr_group.permissions.add(perm)
+        hr_group.permissions.add(produce_report)
         hr_group.save()
 
         manager_group = Group.objects.create(name='Managers')

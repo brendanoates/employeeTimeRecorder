@@ -15,7 +15,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from claims.models import Claim, ClaimType
 from profiles.models import EmployeeTimeRecorderUser
-from tests.functional_tests import PASSWORD, HR_USER, SUPER_USER, USER1, MANAGER2, MANAGER1
+from tests.functional_tests import PASSWORD, HR_USER, SUPER_USER, USER1, MANAGER2, MANAGER1, SENIOR_MANAGER1
 
 
 def populate_database():
@@ -85,10 +85,10 @@ def populate_database():
     manager1.groups.add(manager_group)
     manager1.save()
 
-    user = EmployeeTimeRecorderUser.objects.create(username='Manager2', email='test@email.com')
-    user.set_password(PASSWORD)
-    user.groups.add(manager_group)
-    user.save()
+    manager2 = EmployeeTimeRecorderUser.objects.create(username='Manager2', email='test@email.com')
+    manager2.set_password(PASSWORD)
+    manager2.groups.add(manager_group)
+    manager2.save()
 
     user = EmployeeTimeRecorderUser.objects.create(username='Manager3', email='test@email.com')
     user.set_password(PASSWORD)
@@ -115,9 +115,9 @@ def populate_database():
     normal_user1.manager_email = manager1.username
     normal_user1.save()
 
-    user = EmployeeTimeRecorderUser.objects.create(username='Normal.user2', email='test@email.com')
-    user.set_password(PASSWORD)
-    user.save()
+    normal_user2 = EmployeeTimeRecorderUser.objects.create(username='Normal.user2', email='test@email.com')
+    normal_user2.set_password(PASSWORD)
+    normal_user2.save()
 
     user = EmployeeTimeRecorderUser.objects.create(username='Normal.user3', email='test@email.com')
     user.set_password(PASSWORD)
@@ -128,6 +128,14 @@ def populate_database():
                       date=datetime(2016, 1, x), claim_value=1)
         claim.save()
 
+    claim = Claim(type=ClaimType.objects.all()[0], owner=normal_user2, authorising_manager=manager2,
+                      date=datetime(2016, 1, 20), claim_value=1)
+    claim.save()
+
+    for x in range(1, 21):
+        claim = Claim(type=ClaimType.objects.all()[0], owner=normal_user2, authorising_manager=manager2,
+                      date=datetime(2016, 2, x), claim_value=1, authorised=True)
+        claim.save()
 
 class TaskTestCasesB(StaticLiveServerTestCase):
     def setUp(self):
@@ -473,10 +481,10 @@ class TaskTestCasesE(StaticLiveServerTestCase):
 
     def test_task_E1(self):
         '''
-        Task D test cases
+        Task E test cases
         '''
         # Task E story 2
-        # As manager I want view all claims awaiting my authorisation
+        # As manager I want view all claims for my employees awaiting my authorisation
         self._login_user()
         self.browser.find_element_by_id('view_claims_awaiting_authorisation_button').click()
         self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Authorisation Claims View')))
@@ -486,7 +494,246 @@ class TaskTestCasesE(StaticLiveServerTestCase):
         Task E test cases
         '''
         # Task E story 2
-        # As manager I want to be view all claims awaiting my authorisation  with pagination
+        # As manager I want to be view all claims fot my employees awaiting my authorisation  with pagination
         self._login_user()
         self.browser.find_element_by_id('view_claims_awaiting_authorisation_button').click()
         self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Authorisation Claims View')))
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_next_page')))
+        self.assertTrue((ec.text_to_be_present_in_element((By.ID, 'id_next_page'), 'next')))
+        self.browser.find_element_by_id('id_next_page').click()
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_previous_page')))
+
+    def test_task_E3(self):
+        '''
+        Task E test cases
+        '''
+        # Task E story 3
+        # As manager I want to authorise a single claim for my employees.
+        self._login_user()
+        self.browser.find_element_by_id('view_claims_awaiting_authorisation_button').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Authorisation Claims View'))
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_authorise_claims_button')))
+        self.assertIn('Mon 01 Jan 2016', self.browser.page_source)
+        self.browser.find_element_by_class_name('checkbox1').click()
+        self.browser.find_element_by_id('id_authorise_claims_button').click()
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_authorise_claims_button')))
+        self.assertNotIn('Mon 01 Jan 2016', self.browser.page_source)
+
+    def test_task_E4(self):
+        '''
+        Task E test cases
+        '''
+        # Task E story 4
+        # As manager I want to authorise multiple claims for my employees.
+        self._login_user()
+        self.browser.find_element_by_id('view_claims_awaiting_authorisation_button').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Authorisation Claims View'))
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_authorise_claims_button')))
+        self.assertIn('Mon 01 Jan 2016', self.browser.page_source)
+        self.assertIn('Tue 02 Jan 2016', self.browser.page_source)
+        self.assertIn('Sun 03 Jan 2016', self.browser.page_source)
+        self.browser.find_element_by_class_name('checkbox1').click()
+        self.browser.find_element_by_class_name('checkbox1').send_keys(Keys.TAB + Keys.TAB + Keys.SPACE)
+        self.browser.find_element_by_id('id_authorise_claims_button').click()
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_authorise_claims_button')))
+        self.assertNotIn('Mon 01 Jan 2016', self.browser.page_source)
+        self.assertIn('Sat 02 Jan 2016', self.browser.page_source)
+        self.assertNotIn('Sun 03 Jan 2016', self.browser.page_source)
+
+    def test_task_E5(self):
+        '''
+        Task E test cases
+        '''
+        # Task E story 5
+        # As manager I want to authorise all my employees claims with a select all checkbox.
+        self._login_user()
+        self.browser.find_element_by_id('view_claims_awaiting_authorisation_button').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Authorisation Claims View'))
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_authorise_claims_button')))
+        self.assertIn('Mon 01 Jan 2016', self.browser.page_source)
+        self.assertIn('Wed 06 Jan 2016', self.browser.page_source)
+        self.assertIn('Sun 10 Jan 2016', self.browser.page_source)
+        self.browser.find_element_by_id('selectall').click()
+        self.browser.find_element_by_id('id_authorise_claims_button').click()
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_authorise_claims_button')))
+        self.assertNotIn('Mon 01 Jan 2016', self.browser.page_source)
+        self.assertNotIn('Wed 06 Jan 2016', self.browser.page_source)
+        self.assertNotIn('Sun 10 Jan 2016', self.browser.page_source)
+
+    def test_task_E6(self):
+        '''
+        Task E test cases
+        '''
+        # Task E story 6
+        # As manager I want to view and authorise other managers employees claims.
+        self._login_user()
+        self.browser.find_element_by_id('view_claims_awaiting_authorisation_button').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Authorisation Claims View'))
+        self.browser.find_element_by_id('id_other_manager').click()
+        self.browser.find_element_by_id('id_other_manager').send_keys(Keys.ARROW_DOWN)
+        self.browser.find_element_by_id('id_other_manager').send_keys(Keys.ARROW_DOWN)
+        self.browser.find_element_by_id('id_claim_filter_button').click()
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_authorise_claims_button')))
+        self.assertIn('Normal.user2', self.browser.page_source)
+        self.assertIn('Sat 20 Jan 2016', self.browser.page_source)
+        self.browser.find_element_by_id('id_authorise_claims_button').click()
+        self.assertNotIn('Normal.user2', self.browser.page_source)
+
+class TaskTestCasesF(StaticLiveServerTestCase):
+    def _login_user(self):
+        self.browser.get('{}{}'.format(self.live_server_url, reverse('accounts:accounts-login')))
+        user_id = self.browser.find_element_by_id('id_username')
+        user_password = self.browser.find_element_by_id('id_password')
+        user_id.send_keys(SENIOR_MANAGER1)
+        user_password.send_keys(PASSWORD)
+        user_password.send_keys(Keys.ENTER)
+        self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Home')))
+
+    def setUp(self):
+        populate_database()
+        self.browser = webdriver.Chrome()
+
+    def tearDown(self):
+        # logout
+        self.browser.get('{}{}'.format(self.live_server_url, '/admin/logout/'))
+        self.browser.quit()
+
+
+    def test_task_F1(self):
+        '''
+        Task F test cases
+        '''
+        # Task F story 1
+        # As Senior manager I want view all claims  awaiting my authorisation
+        self._login_user()
+        self.browser.find_element_by_id('view_claims_awaiting_authorisation_button').click()
+        self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Authorisation Claims View')))
+
+    def test_task_F(self):
+        '''
+        Task E test cases
+        '''
+        # Task F story 2
+        # As Senior manager I want to be view all claims awaiting my authorisation  with pagination
+        self._login_user()
+        self.browser.find_element_by_id('view_claims_awaiting_authorisation_button').click()
+        self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Authorisation Claims View')))
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_next_page')))
+        self.assertTrue((ec.text_to_be_present_in_element((By.ID, 'id_next_page'), 'next')))
+        self.browser.find_element_by_id('id_next_page').click()
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_previous_page')))
+
+    def test_task_F3(self):
+        '''
+        Task F test cases
+        '''
+        # Task F story 3
+        # As Senior manager I want to authorise a single claim.
+        self._login_user()
+        self.browser.find_element_by_id('view_claims_awaiting_authorisation_button').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Authorisation Claims View'))
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_authorise_claims_button')))
+        self.assertIn('Mon 01 Feb 2016', self.browser.page_source)
+        self.browser.find_element_by_class_name('checkbox1').click()
+        self.browser.find_element_by_id('id_authorise_claims_button').click()
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_authorise_claims_button')))
+        self.assertNotIn('Mon 01 Feb 2016', self.browser.page_source)
+
+    def test_task_F4(self):
+        '''
+        Task F test cases
+        '''
+        # Task F story 4
+        # As Senior manager I want to authorise multiple claims.
+        self._login_user()
+        self.browser.find_element_by_id('view_claims_awaiting_authorisation_button').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Authorisation Claims View'))
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_authorise_claims_button')))
+        self.assertIn('Mon 01 Feb 2016', self.browser.page_source)
+        self.assertIn('Tue 02 Feb 2016', self.browser.page_source)
+        self.assertIn('Wed 03 Feb 2016', self.browser.page_source)
+        self.browser.find_element_by_class_name('checkbox1').click()
+        self.browser.find_element_by_class_name('checkbox1').send_keys(Keys.TAB + Keys.TAB + Keys.SPACE)
+        self.browser.find_element_by_id('id_authorise_claims_button').click()
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_authorise_claims_button')))
+        self.assertNotIn('Mon 01 Feb 2016', self.browser.page_source)
+        self.assertIn('Tue 02 Feb 2016', self.browser.page_source)
+        self.assertNotIn('Wed 03 Feb 2016', self.browser.page_source)
+
+    def test_task_F5(self):
+        '''
+        Task F test cases
+        '''
+        # Task F story 5
+        # As Senior manager I want to authorise all claims with a select all checkbox.
+        self._login_user()
+        self.browser.find_element_by_id('view_claims_awaiting_authorisation_button').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Authorisation Claims View'))
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_authorise_claims_button')))
+        self.assertIn('Mon 01 Feb 2016', self.browser.page_source)
+        self.assertIn('Tue 09 Feb 2016', self.browser.page_source)
+        self.assertIn('Wed 10 Feb 2016', self.browser.page_source)
+        self.browser.find_element_by_id('selectall').click()
+        self.browser.find_element_by_id('id_authorise_claims_button').click()
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_authorise_claims_button')))
+        self.assertNotIn('Mon 01 Feb 2016', self.browser.page_source)
+        self.assertNotIn('Tue 09 Feb 2016', self.browser.page_source)
+        self.assertNotIn('Wed 10 Feb 2016', self.browser.page_source)
+
+    def test_task_F6(self):
+        '''
+        Task F test cases
+        '''
+        # Task F story 6
+        # As Senior manager I want to view and authorise other managers employees claims.
+        self._login_user()
+        self.browser.find_element_by_id('view_claims_awaiting_authorisation_button').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Authorisation Claims View'))
+        self.browser.find_element_by_id('id_other_manager').click()
+        self.browser.find_element_by_id('id_other_manager').send_keys(Keys.ARROW_DOWN)
+        self.browser.find_element_by_id('id_claim_filter_button').click()
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_authorise_claims_button')))
+        self.assertIn('Normal.user1', self.browser.page_source)
+        self.browser.find_element_by_class_name('checkbox1').send_keys(Keys.TAB + Keys.SPACE)
+        self.assertIn('Sat 02 Jan 2016', self.browser.page_source)
+        self.browser.find_element_by_id('id_authorise_claims_button').click()
+        WebDriverWait(self.browser, 10).until(ec.title_is('Authorisation Claims View'))
+        self.browser.find_element_by_id('id_other_manager').click()
+        self.browser.find_element_by_id('id_other_manager').send_keys(Keys.ARROW_DOWN)
+        self.browser.find_element_by_id('id_claim_filter_button').click()
+        WebDriverWait(self.browser, 10).until(ec.presence_of_element_located((By.ID, 'id_authorise_claims_button')))
+        self.assertNotIn('Sat 02 Jan 2016', self.browser.page_source)
+
+class TaskTestCasesG(StaticLiveServerTestCase):
+    def _login_user(self):
+        self.browser.get('{}{}'.format(self.live_server_url, reverse('accounts:accounts-login')))
+        user_id = self.browser.find_element_by_id('id_username')
+        user_password = self.browser.find_element_by_id('id_password')
+        user_id.send_keys(HR_USER)
+        user_password.send_keys(PASSWORD)
+        user_password.send_keys(Keys.ENTER)
+        self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Home')))
+
+    def setUp(self):
+        populate_database()
+        self.browser = webdriver.Chrome()
+
+    def tearDown(self):
+        # logout
+        self.browser.get('{}{}'.format(self.live_server_url, '/admin/logout/'))
+        self.browser.quit()
+
+
+    def test_task_F1(self):
+        '''
+        Task G test cases
+        '''
+        # Task G story 1
+        # As HR I want to create a CSV file recording all authorised claims
+        self._login_user()
+        self.browser.find_element_by_id('produce_report_button').click()
+        self.assertTrue(WebDriverWait(self.browser, 10).until(ec.title_is('Authorisation Claims View')))
+        # Task G story 2
+        # As HR I want to view claims for a given user.
+        # Task G story 3
+        # As HR I want to view all claims awaiting authorisation

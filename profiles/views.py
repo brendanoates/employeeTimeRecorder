@@ -12,6 +12,10 @@ def profile(request):
         # noinspection PyBroadException
         try:
             user = request.user
+            if request.POST['first_name']:
+                user.first_name = request.POST['first_name']
+            if request.POST['last_name']:
+                user.last_name = request.POST['last_name']
             if request.POST['staff_number']:
                 user.staff_number = request.POST['staff_number']
             if request.POST['manager_email']:
