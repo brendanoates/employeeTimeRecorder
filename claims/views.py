@@ -155,7 +155,7 @@ def produce_report(request):
     for claim in Claim.objects.filter(senior_authorised=True, processed=False).order_by('owner'):
         if not claim.owner in [current_claim_owner]:
             if current_claim_owner: # this is not the first time:
-                writer.writerow(csv_data_line.values)
+                writer.writerow(list(csv_data_line.values()))
             current_claim_owner, csv_data_line = new_claim_owner(claim.owner)
         csv_data_line[claim.type.name] += claim.claim_value
         claim.processed = True
